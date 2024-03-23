@@ -1,8 +1,1067 @@
 {% extends 'base.html' %}
 
 {% block title %}Home - Realstate{% endblock %}
+{% block styles %}
+<style>
+    #map {
+        height: 600px;
+        margin: 10vh;
+    }
+    a{
+        text-decoration: none!important;
+    }
+    #closeMusicButton{
+      position: absolute;
+      right: 20px;
+      top: 12vh;
+      border: none;
+      border-radius: 50%;
+      padding: 10px;
+      padding-inline: 14px;
+      color: white;
+      background-color: #4384F3;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" integrity="sha512-Zcn6bjR/8RZbLEpLIeOwNtzREBAJnUKESxces60Mpoj+2okopSAcSUIUOseddDm0cxnGQzxIR7vJgsLZbdLE3w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock styles %}
 
 {% block body %}
-<h1>Welcome to Realstate</h1>
-<p>This is the homepage of our real estate website.</p>
-{% endblock %}
+<div class="click-closed"></div>
+  <!-- ======= Property Search Section ======= -->
+  <!--/ Form Search Star /-->
+  <div class="box-collapse">
+    <div class="title-box-d">
+      <h3 class="title-d">Search Property</h3>
+    </div>
+    <span class="close-box-collapse right-boxed bi bi-x"></span>
+    <div class="box-collapse-wrap form">
+      <form class="form-a">
+        <div class="row">
+          <div class="col-md-12 mb-2">
+            <div class="form-group">
+              <label class="pb-2" for="Type">Keyword</label>
+              <input type="text" class="form-control form-control-lg form-control-a" placeholder="Keyword">
+            </div>
+          </div>
+          <div class="col-md-6 mb-2">
+            <div class="form-group mt-3">
+              <label class="pb-2" for="Type">Type</label>
+              <select class="form-control form-select form-control-a" id="Type">
+                <option>All Type</option>
+                <option>For Rent</option>
+                <option>For Sale</option>
+                <option>Open House</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6 mb-2">
+            <div class="form-group mt-3">
+              <label class="pb-2" for="city">City</label>
+              <select class="form-control form-select form-control-a" id="city">
+                <option>All City</option>
+                <option>Alabama</option>
+                <option>Arizona</option>
+                <option>California</option>
+                <option>Colorado</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6 mb-2">
+            <div class="form-group mt-3">
+              <label class="pb-2" for="bedrooms">Bedrooms</label>
+              <select class="form-control form-select form-control-a" id="bedrooms">
+                <option>Any</option>
+                <option>01</option>
+                <option>02</option>
+                <option>03</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6 mb-2">
+            <div class="form-group mt-3">
+              <label class="pb-2" for="garages">Garages</label>
+              <select class="form-control form-select form-control-a" id="garages">
+                <option>Any</option>
+                <option>01</option>
+                <option>02</option>
+                <option>03</option>
+                <option>04</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6 mb-2">
+            <div class="form-group mt-3">
+              <label class="pb-2" for="bathrooms">Bathrooms</label>
+              <select class="form-control form-select form-control-a" id="bathrooms">
+                <option>Any</option>
+                <option>01</option>
+                <option>02</option>
+                <option>03</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6 mb-2">
+            <div class="form-group mt-3">
+              <label class="pb-2" for="price">Min Price</label>
+              <select class="form-control form-select form-control-a" id="price">
+                <option>Unlimite</option>
+                <option>$50,000</option>
+                <option>$100,000</option>
+                <option>$150,000</option>
+                <option>$200,000</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <button type="submit" class="btn btn-b">Search Property</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <audio id="myAudio">
+    <source src="/static/audio/file_example_MP3_700KB.mp3" type="audio/mpeg">
+  </audio>
+  <button style="display: none;" id="closeMusicButton">
+
+  </button>
+
+  <div id="map"></div>
+  <!-- ======= Intro Section ======= -->
+  <div class="intro intro-carousel swiper position-relative">
+
+    <div class="swiper-wrapper">
+
+      <div class="swiper-slide carousel-item-a intro-item bg-image" style="background-image: url(/static/assets/img/slide-1.jpg)">
+        <div class="overlay overlay-a"></div>
+        <div class="intro-content display-table">
+          <div class="table-cell">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-8">
+                  <div class="intro-body">
+                    <p class="intro-title-top">Doral, Florida
+                      <br> 78345
+                    </p>
+                    <h1 class="intro-title mb-4 ">
+                      <span class="color-b">204 </span> Mount
+                      <br> Olive Road Two
+                    </h1>
+                    <p class="intro-subtitle intro-price">
+                      <a href="#"><span class="price-a">rent | $ 12.000</span></a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="swiper-slide carousel-item-a intro-item bg-image" style="background-image: url(/static/assets/img/slide-2.jpg)">
+        <div class="overlay overlay-a"></div>
+        <div class="intro-content display-table">
+          <div class="table-cell">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-8">
+                  <div class="intro-body">
+                    <p class="intro-title-top">Doral, Florida
+                      <br> 78345
+                    </p>
+                    <h1 class="intro-title mb-4">
+                      <span class="color-b">204 </span> Rino
+                      <br> Venda Road Five
+                    </h1>
+                    <p class="intro-subtitle intro-price">
+                      <a href="#"><span class="price-a">rent | $ 12.000</span></a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="swiper-slide carousel-item-a intro-item bg-image" style="background-image: url(/static/assets/img/slide-3.jpg)">
+        <div class="overlay overlay-a"></div>
+        <div class="intro-content display-table">
+          <div class="table-cell">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-8">
+                  <div class="intro-body">
+                    <p class="intro-title-top">Doral, Florida
+                      <br> 78345
+                    </p>
+                    <h1 class="intro-title mb-4">
+                      <span class="color-b">204 </span> Alira
+                      <br> Roan Road One
+                    </h1>
+                    <p class="intro-subtitle intro-price">
+                      <a href="#"><span class="price-a">rent | $ 12.000</span></a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="swiper-pagination"></div>
+  </div><!-- End Intro Section -->
+
+  <main id="main">
+
+    <!-- ======= Services Section ======= -->
+    <section class="section-services section-t8">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="title-wrap d-flex justify-content-between">
+              <div class="title-box">
+                <h2 class="title-a">Our Services</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card-box-c foo">
+              <div class="card-header-c d-flex">
+                <div class="card-box-ico">
+                  <span class="bi bi-cart"></span>
+                </div>
+                <div class="card-title-c align-self-center">
+                  <h2 class="title-c">Lifestyle</h2>
+                </div>
+              </div>
+              <div class="card-body-c">
+                <p class="content-c">
+                  Sed porttitor lectus nibh. Cras ultricies ligula sed magna dictum porta. Praesent sapien massa,
+                  convallis a pellentesque
+                  nec, egestas non nisi.
+                </p>
+              </div>
+              <div class="card-footer-c">
+                <a href="#" class="link-c link-icon">Read more
+                  <span class="bi bi-chevron-right"></span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card-box-c foo">
+              <div class="card-header-c d-flex">
+                <div class="card-box-ico">
+                  <span class="bi bi-calendar4-week"></span>
+                </div>
+                <div class="card-title-c align-self-center">
+                  <h2 class="title-c">Loans</h2>
+                </div>
+              </div>
+              <div class="card-body-c">
+                <p class="content-c">
+                  Nulla porttitor accumsan tincidunt. Curabitur aliquet quam id dui posuere blandit. Mauris blandit
+                  aliquet elit, eget tincidunt
+                  nibh pulvinar a.
+                </p>
+              </div>
+              <div class="card-footer-c">
+                <a href="#" class="link-c link-icon">Read more
+                  <span class="bi bi-calendar4-week"></span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card-box-c foo">
+              <div class="card-header-c d-flex">
+                <div class="card-box-ico">
+                  <span class="bi bi-card-checklist"></span>
+                </div>
+                <div class="card-title-c align-self-center">
+                  <h2 class="title-c">Sell</h2>
+                </div>
+              </div>
+              <div class="card-body-c">
+                <p class="content-c">
+                  Sed porttitor lectus nibh. Cras ultricies ligula sed magna dictum porta. Praesent sapien massa,
+                  convallis a pellentesque
+                  nec, egestas non nisi.
+                </p>
+              </div>
+              <div class="card-footer-c">
+                <a href="#" class="link-c link-icon">Read more
+                  <span class="bi bi-chevron-right"></span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section><!-- End Services Section -->
+
+    <!-- ======= Latest Properties Section ======= -->
+    <section class="section-property section-t8">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="title-wrap d-flex justify-content-between">
+              <div class="title-box">
+                <h2 class="title-a">Latest Properties</h2>
+              </div>
+              <div class="title-link">
+                <a href="property-grid.html">All Property
+                  <span class="bi bi-chevron-right"></span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="property-carousel" class="swiper">
+          <div class="swiper-wrapper">
+
+            <div class="carousel-item-b swiper-slide">
+              <div class="card-box-a card-shadow">
+                <div class="img-box-a">
+                  <img src="/static/assets/img/property-6.jpg" alt="" class="img-a img-fluid">
+                </div>
+                <div class="card-overlay">
+                  <div class="card-overlay-a-content">
+                    <div class="card-header-a">
+                      <h2 class="card-title-a">
+                        <a href="property-single.html">206 Mount
+                          <br /> Olive Road Two</a>
+                      </h2>
+                    </div>
+                    <div class="card-body-a">
+                      <div class="price-box d-flex">
+                        <span class="price-a">rent | $ 12.000</span>
+                      </div>
+                      <a href="#" class="link-a">Click here to view
+                        <span class="bi bi-chevron-right"></span>
+                      </a>
+                    </div>
+                    <div class="card-footer-a">
+                      <ul class="card-info d-flex justify-content-around">
+                        <li>
+                          <h4 class="card-info-title">Area</h4>
+                          <span>340m
+                            <sup>2</sup>
+                          </span>
+                        </li>
+                        <li>
+                          <h4 class="card-info-title">Beds</h4>
+                          <span>2</span>
+                        </li>
+                        <li>
+                          <h4 class="card-info-title">Baths</h4>
+                          <span>4</span>
+                        </li>
+                        <li>
+                          <h4 class="card-info-title">Garages</h4>
+                          <span>1</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End carousel item -->
+
+            <div class="carousel-item-b swiper-slide">
+              <div class="card-box-a card-shadow">
+                <div class="img-box-a">
+                  <img src="/static/assets/img/property-3.jpg" alt="" class="img-a img-fluid">
+                </div>
+                <div class="card-overlay">
+                  <div class="card-overlay-a-content">
+                    <div class="card-header-a">
+                      <h2 class="card-title-a">
+                        <a href="property-single.html">157 West
+                          <br /> Central Park</a>
+                      </h2>
+                    </div>
+                    <div class="card-body-a">
+                      <div class="price-box d-flex">
+                        <span class="price-a">rent | $ 12.000</span>
+                      </div>
+                      <a href="property-single.html" class="link-a">Click here to view
+                        <span class="bi bi-chevron-right"></span>
+                      </a>
+                    </div>
+                    <div class="card-footer-a">
+                      <ul class="card-info d-flex justify-content-around">
+                        <li>
+                          <h4 class="card-info-title">Area</h4>
+                          <span>340m
+                            <sup>2</sup>
+                          </span>
+                        </li>
+                        <li>
+                          <h4 class="card-info-title">Beds</h4>
+                          <span>2</span>
+                        </li>
+                        <li>
+                          <h4 class="card-info-title">Baths</h4>
+                          <span>4</span>
+                        </li>
+                        <li>
+                          <h4 class="card-info-title">Garages</h4>
+                          <span>1</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End carousel item -->
+
+            <div class="carousel-item-b swiper-slide">
+              <div class="card-box-a card-shadow">
+                <div class="img-box-a">
+                  <img src="/static/assets/img/property-7.jpg" alt="" class="img-a img-fluid">
+                </div>
+                <div class="card-overlay">
+                  <div class="card-overlay-a-content">
+                    <div class="card-header-a">
+                      <h2 class="card-title-a">
+                        <a href="property-single.html">245 Azabu
+                          <br /> Nishi Park let</a>
+                      </h2>
+                    </div>
+                    <div class="card-body-a">
+                      <div class="price-box d-flex">
+                        <span class="price-a">rent | $ 12.000</span>
+                      </div>
+                      <a href="property-single.html" class="link-a">Click here to view
+                        <span class="bi bi-chevron-right"></span>
+                      </a>
+                    </div>
+                    <div class="card-footer-a">
+                      <ul class="card-info d-flex justify-content-around">
+                        <li>
+                          <h4 class="card-info-title">Area</h4>
+                          <span>340m
+                            <sup>2</sup>
+                          </span>
+                        </li>
+                        <li>
+                          <h4 class="card-info-title">Beds</h4>
+                          <span>2</span>
+                        </li>
+                        <li>
+                          <h4 class="card-info-title">Baths</h4>
+                          <span>4</span>
+                        </li>
+                        <li>
+                          <h4 class="card-info-title">Garages</h4>
+                          <span>1</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End carousel item -->
+
+            <div class="carousel-item-b swiper-slide">
+              <div class="card-box-a card-shadow">
+                <div class="img-box-a">
+                  <img src="/static/assets/img/property-10.jpg" alt="" class="img-a img-fluid">
+                </div>
+                <div class="card-overlay">
+                  <div class="card-overlay-a-content">
+                    <div class="card-header-a">
+                      <h2 class="card-title-a">
+                        <a href="property-single.html">204 Montal
+                          <br /> South Bela Two</a>
+                      </h2>
+                    </div>
+                    <div class="card-body-a">
+                      <div class="price-box d-flex">
+                        <span class="price-a">rent | $ 12.000</span>
+                      </div>
+                      <a href="property-single.html" class="link-a">Click here to view
+                        <span class="bi bi-chevron-right"></span>
+                      </a>
+                    </div>
+                    <div class="card-footer-a">
+                      <ul class="card-info d-flex justify-content-around">
+                        <li>
+                          <h4 class="card-info-title">Area</h4>
+                          <span>340m
+                            <sup>2</sup>
+                          </span>
+                        </li>
+                        <li>
+                          <h4 class="card-info-title">Beds</h4>
+                          <span>2</span>
+                        </li>
+                        <li>
+                          <h4 class="card-info-title">Baths</h4>
+                          <span>4</span>
+                        </li>
+                        <li>
+                          <h4 class="card-info-title">Garages</h4>
+                          <span>1</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End carousel item -->
+          </div>
+        </div>
+        <div class="propery-carousel-pagination carousel-pagination"></div>
+
+      </div>
+    </section><!-- End Latest Properties Section -->
+
+    <!-- ======= Agents Section ======= -->
+    <section class="section-agents section-t8">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="title-wrap d-flex justify-content-between">
+              <div class="title-box">
+                <h2 class="title-a">Best Agents</h2>
+              </div>
+              <div class="title-link">
+                <a href="agents-grid.html">All Agents
+                  <span class="bi bi-chevron-right"></span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card-box-d">
+              <div class="card-img-d">
+                <img src="/static/assets/img/agent-4.jpg" alt="" class="img-d img-fluid">
+              </div>
+              <div class="card-overlay card-overlay-hover">
+                <div class="card-header-d">
+                  <div class="card-title-d align-self-center">
+                    <h3 class="title-d">
+                      <a href="agent-single.html" class="link-two">Margaret Sotillo
+                        <br> Escala</a>
+                    </h3>
+                  </div>
+                </div>
+                <div class="card-body-d">
+                  <p class="content-d color-text-a">
+                    Sed porttitor lectus nibh, Cras ultricies ligula sed magna dictum porta two.
+                  </p>
+                  <div class="info-agents color-a">
+                    <p>
+                      <strong>Phone: </strong> +54 356 945234
+                    </p>
+                    <p>
+                      <strong>Email: </strong> agents@example.com
+                    </p>
+                  </div>
+                </div>
+                <div class="card-footer-d">
+                  <div class="socials-footer d-flex justify-content-center">
+                    <ul class="list-inline">
+                      <li class="list-inline-item">
+                        <a href="#" class="link-one">
+                          <i class="bi bi-facebook" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item">
+                        <a href="#" class="link-one">
+                          <i class="bi bi-twitter" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item">
+                        <a href="#" class="link-one">
+                          <i class="bi bi-instagram" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item">
+                        <a href="#" class="link-one">
+                          <i class="bi bi-linkedin" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card-box-d">
+              <div class="card-img-d">
+                <img src="/static/assets/img/agent-1.jpg" alt="" class="img-d img-fluid">
+              </div>
+              <div class="card-overlay card-overlay-hover">
+                <div class="card-header-d">
+                  <div class="card-title-d align-self-center">
+                    <h3 class="title-d">
+                      <a href="agent-single.html" class="link-two">Stiven Spilver
+                        <br> Darw</a>
+                    </h3>
+                  </div>
+                </div>
+                <div class="card-body-d">
+                  <p class="content-d color-text-a">
+                    Sed porttitor lectus nibh, Cras ultricies ligula sed magna dictum porta two.
+                  </p>
+                  <div class="info-agents color-a">
+                    <p>
+                      <strong>Phone: </strong> +54 356 945234
+                    </p>
+                    <p>
+                      <strong>Email: </strong> agents@example.com
+                    </p>
+                  </div>
+                </div>
+                <div class="card-footer-d">
+                  <div class="socials-footer d-flex justify-content-center">
+                    <ul class="list-inline">
+                      <li class="list-inline-item">
+                        <a href="#" class="link-one">
+                          <i class="bi bi-facebook" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item">
+                        <a href="#" class="link-one">
+                          <i class="bi bi-twitter" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item">
+                        <a href="#" class="link-one">
+                          <i class="bi bi-instagram" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item">
+                        <a href="#" class="link-one">
+                          <i class="bi bi-linkedin" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card-box-d">
+              <div class="card-img-d">
+                <img src="/static/assets/img/agent-5.jpg" alt="" class="img-d img-fluid">
+              </div>
+              <div class="card-overlay card-overlay-hover">
+                <div class="card-header-d">
+                  <div class="card-title-d align-self-center">
+                    <h3 class="title-d">
+                      <a href="agent-single.html" class="link-two">Emma Toledo
+                        <br> Cascada</a>
+                    </h3>
+                  </div>
+                </div>
+                <div class="card-body-d">
+                  <p class="content-d color-text-a">
+                    Sed porttitor lectus nibh, Cras ultricies ligula sed magna dictum porta two.
+                  </p>
+                  <div class="info-agents color-a">
+                    <p>
+                      <strong>Phone: </strong> +54 356 945234
+                    </p>
+                    <p>
+                      <strong>Email: </strong> agents@example.com
+                    </p>
+                  </div>
+                </div>
+                <div class="card-footer-d">
+                  <div class="socials-footer d-flex justify-content-center">
+                    <ul class="list-inline">
+                      <li class="list-inline-item">
+                        <a href="#" class="link-one">
+                          <i class="bi bi-facebook" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item">
+                        <a href="#" class="link-one">
+                          <i class="bi bi-twitter" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item">
+                        <a href="#" class="link-one">
+                          <i class="bi bi-instagram" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item">
+                        <a href="#" class="link-one">
+                          <i class="bi bi-linkedin" aria-hidden="true"></i>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section><!-- End Agents Section -->
+
+    <!-- ======= Latest News Section ======= -->
+    <section class="section-news section-t8">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="title-wrap d-flex justify-content-between">
+              <div class="title-box">
+                <h2 class="title-a">Latest News</h2>
+              </div>
+              <div class="title-link">
+                <a href="blog-grid.html">All News
+                  <span class="bi bi-chevron-right"></span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="news-carousel" class="swiper">
+          <div class="swiper-wrapper">
+
+            <div class="carousel-item-c swiper-slide">
+              <div class="card-box-b card-shadow news-box">
+                <div class="img-box-b">
+                  <img src="/static/assets/img/post-2.jpg" alt="" class="img-b img-fluid">
+                </div>
+                <div class="card-overlay">
+                  <div class="card-header-b">
+                    <div class="card-category-b">
+                      <a href="#" class="category-b">House</a>
+                    </div>
+                    <div class="card-title-b">
+                      <h2 class="title-2">
+                        <a href="blog-single.html">House is comming
+                          <br> new</a>
+                      </h2>
+                    </div>
+                    <div class="card-date">
+                      <span class="date-b">18 Sep. 2017</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End carousel item -->
+
+            <div class="carousel-item-c swiper-slide">
+              <div class="card-box-b card-shadow news-box">
+                <div class="img-box-b">
+                  <img src="/static/assets/img/post-5.jpg" alt="" class="img-b img-fluid">
+                </div>
+                <div class="card-overlay">
+                  <div class="card-header-b">
+                    <div class="card-category-b">
+                      <a href="#" class="category-b">Travel</a>
+                    </div>
+                    <div class="card-title-b">
+                      <h2 class="title-2">
+                        <a href="blog-single.html">Travel is comming
+                          <br> new</a>
+                      </h2>
+                    </div>
+                    <div class="card-date">
+                      <span class="date-b">18 Sep. 2017</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End carousel item -->
+
+            <div class="carousel-item-c swiper-slide">
+              <div class="card-box-b card-shadow news-box">
+                <div class="img-box-b">
+                  <img src="/static/assets/img/post-7.jpg" alt="" class="img-b img-fluid">
+                </div>
+                <div class="card-overlay">
+                  <div class="card-header-b">
+                    <div class="card-category-b">
+                      <a href="#" class="category-b">Park</a>
+                    </div>
+                    <div class="card-title-b">
+                      <h2 class="title-2">
+                        <a href="blog-single.html">Park is comming
+                          <br> new</a>
+                      </h2>
+                    </div>
+                    <div class="card-date">
+                      <span class="date-b">18 Sep. 2017</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End carousel item -->
+
+            <div class="carousel-item-c swiper-slide">
+              <div class="card-box-b card-shadow news-box">
+                <div class="img-box-b">
+                  <img src="/static/assets/img/post-3.jpg" alt="" class="img-b img-fluid">
+                </div>
+                <div class="card-overlay">
+                  <div class="card-header-b">
+                    <div class="card-category-b">
+                      <a href="#" class="category-b">Travel</a>
+                    </div>
+                    <div class="card-title-b">
+                      <h2 class="title-2">
+                        <a href="#">Travel is comming
+                          <br> new</a>
+                      </h2>
+                    </div>
+                    <div class="card-date">
+                      <span class="date-b">18 Sep. 2017</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End carousel item -->
+
+          </div>
+        </div>
+
+        <div class="news-carousel-pagination carousel-pagination"></div>
+      </div>
+    </section><!-- End Latest News Section -->
+
+    <!-- ======= Testimonials Section ======= -->
+    <section class="section-testimonials section-t8 nav-arrow-a">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="title-wrap d-flex justify-content-between">
+              <div class="title-box">
+                <h2 class="title-a">Testimonials</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="testimonial-carousel" class="swiper">
+          <div class="swiper-wrapper">
+
+            <div class="carousel-item-a swiper-slide">
+              <div class="testimonials-box">
+                <div class="row">
+                  <div class="col-sm-12 col-md-6">
+                    <div class="testimonial-img">
+                      <img src="/static/assets/img/testimonial-1.jpg" alt="" class="img-fluid">
+                    </div>
+                  </div>
+                  <div class="col-sm-12 col-md-6">
+                    <div class="testimonial-ico">
+                      <i class="bi bi-chat-quote-fill"></i>
+                    </div>
+                    <div class="testimonials-content">
+                      <p class="testimonial-text">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis, cupiditate ea nam praesentium
+                        debitis hic ber quibusdam
+                        voluptatibus officia expedita corpori.
+                      </p>
+                    </div>
+                    <div class="testimonial-author-box">
+                      <img src="/static/assets/img/mini-testimonial-1.jpg" alt="" class="testimonial-avatar">
+                      <h5 class="testimonial-author">Albert & Erika</h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End carousel item -->
+
+            <div class="carousel-item-a swiper-slide">
+              <div class="testimonials-box">
+                <div class="row">
+                  <div class="col-sm-12 col-md-6">
+                    <div class="testimonial-img">
+                      <img src="/static/assets/img/testimonial-2.jpg" alt="" class="img-fluid">
+                    </div>
+                  </div>
+                  <div class="col-sm-12 col-md-6">
+                    <div class="testimonial-ico">
+                      <i class="bi bi-chat-quote-fill"></i>
+                    </div>
+                    <div class="testimonials-content">
+                      <p class="testimonial-text">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Omnis, cupiditate ea nam praesentium
+                        debitis hic ber quibusdam
+                        voluptatibus officia expedita corpori.
+                      </p>
+                    </div>
+                    <div class="testimonial-author-box">
+                      <img src="/static/assets/img/mini-testimonial-2.jpg" alt="" class="testimonial-avatar">
+                      <h5 class="testimonial-author">Pablo & Emma</h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End carousel item -->
+
+          </div>
+        </div>
+        <div class="testimonial-carousel-pagination carousel-pagination"></div>
+
+      </div>
+    </section><!-- End Testimonials Section -->
+
+  </main><!-- End #main -->
+{% endblock body %}
+
+{% block javascript %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+  // Define map options
+  const map = L.map('map')
+
+  // Add tile layer (using OpenStreetMap tiles)
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  // Function to handle successful retrieval of user's location
+  function handleLocationSuccess(position) {
+        const { latitude, longitude } = position.coords;
+        userLocation = [latitude, longitude];
+        map.setView(userLocation, 12);
+
+        // Fetch property data from backend
+        fetch('/api/properties/')
+            .then(response => response.json())
+            .then(properties => {
+                // Add markers for each property
+                properties.forEach(property => {
+                    let icon;
+                    if (property.type === "Residential") {
+                      icon = L.icon({
+                          iconUrl: '/static/map-icons/Residential.png',
+                          iconSize: [32, 32],
+                          iconAnchor: [16, 32],
+                          popupAnchor: [0, -32]
+                      });
+                  } else if (property.type === "Agricultural") {
+                      icon = L.icon({
+                          iconUrl: '/static/map-icons/Agricultural.png',
+                          iconSize: [32, 32],
+                          iconAnchor: [16, 32],
+                          popupAnchor: [0, -32]
+                      });
+                  } else if (property.type === "Commercial") {
+                      icon = L.icon({
+                          iconUrl: '/static/map-icons/Commercial.png',
+                          iconSize: [32, 32],
+                          iconAnchor: [16, 32],
+                          popupAnchor: [0, -32]
+                      });
+                  } else if (property.type === "Other") {
+                      icon = L.icon({
+                          iconUrl: '/static/map-icons/Other.png',
+                          iconSize: [32, 32],
+                          iconAnchor: [16, 32],
+                          popupAnchor: [0, -32]
+                      });
+                  }
+    
+
+                    const marker = L.marker([property.lat, property.lng], { icon }).addTo(map);
+                    marker.bindPopup(`
+                        <b>${property.name}</b><br>
+                        <p>Type: ${property.type}</p>
+                        <p>Description: ${property.description}</p>
+                        <p>Price: ${property.price}</p>
+                        <p>Seller: ${property.seller_name}</p>
+                        <p>Price Range: ${property.price_range}</p>
+                        <p>Locality: ${property.locality}</p>
+                        <p>Contact: ${property.contact}</p>
+                        <p>Pincode: ${property.pincode}</p>
+                        <p>Likes: ${property.likes}</p>
+                        <p>Views: ${property.views}</p>
+                    `);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching property data:', error);
+            });
+    }
+
+    // Function to handle errors in retrieving user's location
+    function handleLocationError(error) {
+        console.error('Error getting user location:', error);
+        // Set default map view if user location cannot be retrieved
+        map.setView([26.7922, 82.1998], 12);
+    }
+
+    // Try to get user's location using Geolocation API
+    if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(handleLocationSuccess, handleLocationError);
+    } else {
+        // Set default map view if Geolocation API is not supported
+        map.setView([26.7922, 82.1998], 12);
+    }
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const audio = document.getElementById('myAudio');
+    const audioSwitch = document.getElementById('audio-switch');
+    const closeMusicButton = document.getElementById('closeMusicButton');
+
+    let userInteracted = false;
+    
+    function playaudio(){
+      closeMusicButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-volume-up" viewBox="0 0 16 16"> <path d="M11.536 14.01A8.47 8.47 0 0 0 14.026 8a8.47 8.47 0 0 0-2.49-6.01l-.708.707A7.48 7.48 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303z"/> <path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.48 5.48 0 0 1 11.025 8a5.48 5.48 0 0 1-1.61 3.89z"/> <path d="M10.025 8a4.5 4.5 0 0 1-1.318 3.182L8 10.475A3.5 3.5 0 0 0 9.025 8c0-.966-.392-1.841-1.025-2.475l.707-.707A4.5 4.5 0 0 1 10.025 8M7 4a.5.5 0 0 0-.812-.39L3.825 5.5H1.5A.5.5 0 0 0 1 6v4a.5.5 0 0 0 .5.5h2.325l2.363 1.89A.5.5 0 0 0 7 12zM4.312 6.39 6 5.04v5.92L4.312 9.61A.5.5 0 0 0 4 9.5H2v-3h2a.5.5 0 0 0 .312-.11"/> </svg>';
+      closeMusicButton.style.display = 'inline-block';
+      audio.play();
+    }
+    function pauseaudio(){
+      closeMusicButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-volume-mute" viewBox="0 0 16 16"> <path d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06M6 5.04 4.312 6.39A.5.5 0 0 1 4 6.5H2v3h2a.5.5 0 0 1 .312.11L6 10.96zm7.854.606a.5.5 0 0 1 0 .708L12.207 8l1.647 1.646a.5.5 0 0 1-.708.708L11.5 8.707l-1.646 1.647a.5.5 0 0 1-.708-.708L10.793 8 9.146 6.354a.5.5 0 1 1 .708-.708L11.5 7.293l1.646-1.647a.5.5 0 0 1 .708 0"/> </svg>';
+      audio.pause();
+    }
+
+    // Function to handle audio state based on the checkbox
+    function handleAudioState() {
+      if (audioSwitch.checked) {
+        // If the audio-switch is checked, show closeMusicButton and play audio
+        playaudio();
+      } else {
+        // If the audio-switch is unchecked, hide closeMusicButton and pause audio
+        closeMusicButton.style.display = 'none';
+        pauseaudio();
+      }
+    }
+
+    // Add event listener to audio-switch checkbox
+    audioSwitch.addEventListener('change', function() {
+      handleAudioState();
+    });
+
+    // Toggle between pausing and playing audio when close button is clicked
+    closeMusicButton.addEventListener('click', function() {
+      if (audio.paused) {
+        playaudio();  
+      } else {
+        pauseaudio();
+      }
+    });
+    document.addEventListener('click', function() {
+      if (!userInteracted) {
+        userInteracted = true;
+        handleAudioState();
+      }
+    });
+  });
+</script>
+
+
+{% endblock javascript %}

@@ -25,22 +25,32 @@ SECRET_KEY = 'django-insecure-96=cg6_9_dn#i!8+e32i$m9h!5u58(jw2#l^fp(^vx&7l8hq22
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'admin_interface',
+    'colorfield',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'home',
+    'authentication',
+    'agent_dashboard',
+    'user_dashboard',
+    'rest_framework',
+    'api',
+    'audio',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # 'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -114,8 +124,25 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
+import os
 
-STATIC_URL = 'static/'
+ADMIN_INTERFACE_PATH = BASE_DIR / 'media/admin-interface'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+    ADMIN_INTERFACE_PATH,
+]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Base URL to serve media files
+MEDIA_URL = '/media/'
+
+# Directory where uploaded media files will be stored
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Optional: Set permissions for newly uploaded files
+FILE_UPLOAD_PERMISSIONS = 0o644
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
