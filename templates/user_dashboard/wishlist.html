@@ -1,379 +1,145 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}About Us{% endblock %}
+{% block title %}Wishlist{% endblock title %}
 {% block styles %}
 <style>
-    #map {
-        height: 600px;
-        margin: 10vh;
+    .heart-icon {
+        color: #ff6b6b;
+        font-size: 24px;
+        cursor: pointer;
+        transition: color 0.3s ease-in-out;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 999;
     }
-    a{
-        text-decoration: none!important;
+    .heart-icon.filled {
+        color: #ff0000;
     }
-    a:hover{
-        color: black!important;
+    .card-box-a {
+        position: relative;
+    }
+    .list-group-flush>.list-group-item:last-child {
+        border-bottom-width: 1px!important;
+        border-radius:0;
     }
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" integrity="sha512-Zcn6bjR/8RZbLEpLIeOwNtzREBAJnUKESxces60Mpoj+2okopSAcSUIUOseddDm0cxnGQzxIR7vJgsLZbdLE3w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 {% endblock styles %}
 
 {% block body %}
-<main id="main">
-
-    <!-- ======= Intro Single ======= -->
-    <section class="intro-single">
-      <div class="container">
+<section class="section-property section-t8">
+    <div class="container">
         <div class="row">
-          <div class="col-md-12 col-lg-8">
-            <div class="title-single-box">
-              <h1 class="title-single">The Future That Can Be Yours</h1>
-              <span class="color-text-a">Your Wishlist</span>
+            <div class="col-md-3">
+                <div class="card h-100 animate__animated animate__fadeInLeft">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">My Profile</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'user_dashboard' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-passport me-2"></i>
+                            Dashboard
+                        </a>
+                        <a href="{% url 'user_profile' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-person me-2"></i>
+                            Profile
+                        </a>
+                        <a href="{% url 'wishlist' %}" class="list-group-item list-group-item-action active">
+                            <i class="bi bi-heart me-2"></i>
+                            My Wishlist
+                        </a>
+                        <a href="{% url 'settings' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-gear me-2"></i>
+                            Settings
+                        </a>
+                        <a href="{% url 'logout' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="col-md-12 col-lg-4">
-            <nav aria-label="breadcrumb" class="breadcrumb-box d-flex justify-content-lg-end">
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                  <a href="#">Home</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">
-                  Wishlist
-                </li>
-              </ol>
-            </nav>
-          </div>
+            <div class="col-md-9">
+                <div class="h-100 animate__animated animate__fadeInRight">
+                    <div class="card-body p-0">
+                        <div class="row">
+                            <div class="h-100 animate__animated animate__fadeInLeft p-0 pe-2">
+                                <div class="card">
+                                    <div class="card-header bg-primary text-white d-flex justify-content-center align-items-center">
+                                        <h5 class="mb-0">Wishlisted Properties</h5>
+                                    </div>
+                                    <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-between">
+                                        {% for property in wishlist_items %}
+                                        <div class="col-md-5">
+                                            <div class="card-box-a card-shadow m-3">
+                                              <div class="img-box-a">
+                                                {% if property.property_image %}
+                                                <img src="{{ property.property_image.url }}" alt="{{ property.name }}" class="img-a img-fluid">
+                                                {% else %}
+                                                <img src="/static/assets/img/property-default.jpg" alt="{{ property.name }}" class="img-a img-fluid">
+                                                {% endif %}
+                                                <div class="heart-icon-container">
+                                                  {% if property in request.user.userprofile.wishlist.all %}
+                                                  <i class="bi bi-heart-fill heart-icon filled" data-property-id="{{ property.id }}" data-action="remove"></i>
+                                                  {% else %}
+                                                  <i class="bi bi-heart heart-icon" data-property-id="{{ property.id }}" data-action="add"></i>
+                                                  {% endif %}
+                                                </div>
+                                              </div>
+                                              <div class="card-overlay">
+                                                <div class="card-overlay-a-content">
+                                                  <div class="card-header-a">
+                                                    <h2 style='font-size:1.5rem;' class="card-title-a">
+                                                      <a href="#">{{ property.name }}</a>
+                                                    </h2>
+                                                  </div>
+                                                  <div class="card-body-a">
+                                                    <div class="price-box d-flex">
+                                                      <span class="price-a">{{ property.type }} | STARTING ₹ {{ property.price }}</span>
+                                                    </div>
+                                                    <a href="{% url 'property_details' property.property_id %}" class="link-a">Click here to view
+                                                      <span class="bi bi-chevron-right"></span>
+                                                  </a>
+                                                  </div>
+                                                  <div class="card-footer-a">
+                                                    <ul class="card-info d-flex justify-content-around">
+                                                      {% if property.area != 0 %}
+                                                      <li>
+                                                        <h4 class="card-info-title">Area</h4>
+                                                        <span>{{ property.area }} m<sup>2</sup></span>
+                                                      </li>
+                                                      {% elif property.bedrooms != 0 %}
+                                                      <li>
+                                                        <h4 class="card-info-title">Beds</h4>
+                                                        <span>{{ property.bedrooms }}</span>
+                                                      </li>
+                                                      {% elif property.bathrooms != 0 %}
+                                                      <li>
+                                                        <h4 class="card-info-title">Baths</h4>
+                                                        <span>{{ property.bathrooms }}</span>
+                                                      </li>
+                                                      {% elif property.kitchens != 0 %}
+                                                      <li>
+                                                        <h4 class="card-info-title">Kitchens</h4>
+                                                        <span>{{ property.kitchens }}</span>
+                                                      </li>
+                                                      {% endif %}
+                                                    </ul>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </section><!-- End Intro Single-->
-
-    <!-- ======= Property Grid ======= -->
-    <section class="property-grid grid">
-      <div class="container">
-        <div class="row">
-          <div class="col-sm-12">
-            <div class="grid-option">
-              <form>
-                <select class="custom-select">
-                  <option selected>All</option>
-                  <option value="1">Cheapest</option>
-                  <option value="2">Most Rooms</option>
-                  <option value="3">Most Rated</option>
-                </select>
-              </form>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card-box-a card-shadow">
-              <div class="img-box-a">
-                <img src="/static/assets/img/property-1.jpg" alt="" class="img-a img-fluid">
-              </div>
-              <div class="card-overlay">
-                <div class="card-overlay-a-content">
-                  <div class="card-header-a">
-                    <h2 class="card-title-a">
-                      <a href="#">204 Mount
-                        <br /> Olive Road Two</a>
-                    </h2>
-                  </div>
-                  <div class="card-body-a">
-                    <div class="price-box d-flex">
-                      <span class="price-a">rent | $ 12.000</span>
-                    </div>
-                    <a href="property-single.html" class="link-a">Click here to view
-                      <span class="bi bi-chevron-right"></span>
-                    </a>
-                  </div>
-                  <div class="card-footer-a">
-                    <ul class="card-info d-flex justify-content-around">
-                      <li>
-                        <h4 class="card-info-title">Area</h4>
-                        <span>340m
-                          <sup>2</sup>
-                        </span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Beds</h4>
-                        <span>2</span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Baths</h4>
-                        <span>4</span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Garages</h4>
-                        <span>1</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card-box-a card-shadow">
-              <div class="img-box-a">
-                <img src="/static/assets/img/property-3.jpg" alt="" class="img-a img-fluid">
-              </div>
-              <div class="card-overlay">
-                <div class="card-overlay-a-content">
-                  <div class="card-header-a">
-                    <h2 class="card-title-a">
-                      <a href="#">204 Mount
-                        <br /> Olive Road Two</a>
-                    </h2>
-                  </div>
-                  <div class="card-body-a">
-                    <div class="price-box d-flex">
-                      <span class="price-a">rent | $ 12.000</span>
-                    </div>
-                    <a href="property-single.html" class="link-a">Click here to view
-                      <span class="bi bi-chevron-right"></span>
-                    </a>
-                  </div>
-                  <div class="card-footer-a">
-                    <ul class="card-info d-flex justify-content-around">
-                      <li>
-                        <h4 class="card-info-title">Area</h4>
-                        <span>340m
-                          <sup>2</sup>
-                        </span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Beds</h4>
-                        <span>2</span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Baths</h4>
-                        <span>4</span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Garages</h4>
-                        <span>1</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card-box-a card-shadow">
-              <div class="img-box-a">
-                <img src="/static/assets/img/property-6.jpg" alt="" class="img-a img-fluid">
-              </div>
-              <div class="card-overlay">
-                <div class="card-overlay-a-content">
-                  <div class="card-header-a">
-                    <h2 class="card-title-a">
-                      <a href="#">204 Mount
-                        <br /> Olive Road Two</a>
-                    </h2>
-                  </div>
-                  <div class="card-body-a">
-                    <div class="price-box d-flex">
-                      <span class="price-a">rent | $ 12.000</span>
-                    </div>
-                    <a href="property-single.html" class="link-a">Click here to view
-                      <span class="bi bi-chevron-right"></span>
-                    </a>
-                  </div>
-                  <div class="card-footer-a">
-                    <ul class="card-info d-flex justify-content-around">
-                      <li>
-                        <h4 class="card-info-title">Area</h4>
-                        <span>340m
-                          <sup>2</sup>
-                        </span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Beds</h4>
-                        <span>2</span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Baths</h4>
-                        <span>4</span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Garages</h4>
-                        <span>1</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card-box-a card-shadow">
-              <div class="img-box-a">
-                <img src="/static/assets/img/property-7.jpg" alt="" class="img-a img-fluid">
-              </div>
-              <div class="card-overlay">
-                <div class="card-overlay-a-content">
-                  <div class="card-header-a">
-                    <h2 class="card-title-a">
-                      <a href="#">204 Mount
-                        <br /> Olive Road Two</a>
-                    </h2>
-                  </div>
-                  <div class="card-body-a">
-                    <div class="price-box d-flex">
-                      <span class="price-a">rent | $ 12.000</span>
-                    </div>
-                    <a href="property-single.html" class="link-a">Click here to view
-                      <span class="bi bi-chevron-right"></span>
-                    </a>
-                  </div>
-                  <div class="card-footer-a">
-                    <ul class="card-info d-flex justify-content-around">
-                      <li>
-                        <h4 class="card-info-title">Area</h4>
-                        <span>340m
-                          <sup>2</sup>
-                        </span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Beds</h4>
-                        <span>2</span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Baths</h4>
-                        <span>4</span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Garages</h4>
-                        <span>1</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card-box-a card-shadow">
-              <div class="img-box-a">
-                <img src="/static/assets/img/property-8.jpg" alt="" class="img-a img-fluid">
-              </div>
-              <div class="card-overlay">
-                <div class="card-overlay-a-content">
-                  <div class="card-header-a">
-                    <h2 class="card-title-a">
-                      <a href="#">204 Mount
-                        <br /> Olive Road Two</a>
-                    </h2>
-                  </div>
-                  <div class="card-body-a">
-                    <div class="price-box d-flex">
-                      <span class="price-a">rent | $ 12.000</span>
-                    </div>
-                    <a href="property-single.html" class="link-a">Click here to view
-                      <span class="bi bi-chevron-right"></span>
-                    </a>
-                  </div>
-                  <div class="card-footer-a">
-                    <ul class="card-info d-flex justify-content-around">
-                      <li>
-                        <h4 class="card-info-title">Area</h4>
-                        <span>340m
-                          <sup>2</sup>
-                        </span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Beds</h4>
-                        <span>2</span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Baths</h4>
-                        <span>4</span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Garages</h4>
-                        <span>1</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card-box-a card-shadow">
-              <div class="img-box-a">
-                <img src="/static/assets/img/property-10.jpg" alt="" class="img-a img-fluid">
-              </div>
-              <div class="card-overlay">
-                <div class="card-overlay-a-content">
-                  <div class="card-header-a">
-                    <h2 class="card-title-a">
-                      <a href="#">204 Mount
-                        <br /> Olive Road Two</a>
-                    </h2>
-                  </div>
-                  <div class="card-body-a">
-                    <div class="price-box d-flex">
-                      <span class="price-a">rent | $ 12.000</span>
-                    </div>
-                    <a href="property-single.html" class="link-a">Click here to view
-                      <span class="bi bi-chevron-right"></span>
-                    </a>
-                  </div>
-                  <div class="card-footer-a">
-                    <ul class="card-info d-flex justify-content-around">
-                      <li>
-                        <h4 class="card-info-title">Area</h4>
-                        <span>340m
-                          <sup>2</sup>
-                        </span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Beds</h4>
-                        <span>2</span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Baths</h4>
-                        <span>4</span>
-                      </li>
-                      <li>
-                        <h4 class="card-info-title">Garages</h4>
-                        <span>1</span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-12">
-            <nav class="pagination-a">
-              <ul class="pagination justify-content-end">
-                <li class="page-item disabled">
-                  <a class="page-link" href="#" tabindex="-1">
-                    <span class="bi bi-chevron-left"></span>
-                  </a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">1</a>
-                </li>
-                <li class="page-item active">
-                  <a class="page-link" href="#">2</a>
-                </li>
-                <li class="page-item">
-                  <a class="page-link" href="#">3</a>
-                </li>
-                <li class="page-item next">
-                  <a class="page-link" href="#">
-                    <span class="bi bi-chevron-right"></span>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div>
-      </div>
-    </section>
-
-  </main>
+    </div>
+</section>
 {% endblock body %}

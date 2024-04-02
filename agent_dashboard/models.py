@@ -14,11 +14,12 @@ class Property(models.Model):
 
     property_id = models.CharField(max_length=100, unique=True, editable=False)
     name = models.CharField(max_length=100)
+    property_image = models.ImageField(upload_to='Properties/', null=True, blank=True)
     lat = models.FloatField()
     lng = models.FloatField()
     type = models.CharField(max_length=50, choices=TYPE_CHOICES)
     description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.CharField(max_length=100)
     seller_name = models.CharField(max_length=100)
     locality = models.CharField(max_length=100)
     contact = models.CharField(max_length=20)

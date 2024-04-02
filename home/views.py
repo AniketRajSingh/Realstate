@@ -9,9 +9,5 @@ def home(request):
     return render(request, 'index.html', {'user_settings': user_settings})
 def about(request):
     return render(request, 'about.html')
-def properties(request):
-    return render(request, 'property-grid.html')
-def property_details(request):
-    return render(request, 'property-single.html')
 def contact(request):
     return render(request, 'contact.html')

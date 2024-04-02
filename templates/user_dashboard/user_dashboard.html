@@ -1,21 +1,125 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}About Us{% endblock %}
 {% block styles %}
 <style>
-    #map {
-        height: 600px;
-        margin: 10vh;
+    .card {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
-    a{
-        text-decoration: none!important;
+    
+    .profile-image {
+        width:140px;
+        aspect-ratio:1;
+        object-fit: cover;
     }
-    a:hover{
-        color: black!important;
+    
+    .user-name {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-top: 0.5rem;
+    }
+    .list-group-flush>.list-group-item:last-child {
+        border-bottom-width: 1px!important;
+        border-radius:0;
     }
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" integrity="sha512-Zcn6bjR/8RZbLEpLIeOwNtzREBAJnUKESxces60Mpoj+2okopSAcSUIUOseddDm0cxnGQzxIR7vJgsLZbdLE3w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 {% endblock styles %}
 
+{% block title %}User Profile{% endblock %}
+
 {% block body %}
-{% endblock body %}
+<section class="section-property section-t8">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card h-100 animate__animated animate__fadeInLeft">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">My Profile</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'user_dashboard' %}" class="list-group-item list-group-item-action active">
+                            <i class="bi bi-passport me-2"></i>
+                            Dashboard
+                        </a>
+                        <a href="{% url 'user_profile' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-person me-2"></i>
+                            Profile
+                        </a>
+                        <a href="{% url 'wishlist' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-heart me-2"></i>
+                            My Wishlist
+                        </a>
+                        <a href="{% url 'settings' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-gear me-2"></i>
+                            Settings
+                        </a>
+                        <a href="{% url 'logout' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="h-100 animate__animated animate__fadeInRight">
+                    <div class="card-body p-0">
+                        <div class="row">
+                            <div class="col-md-4 card p-0 user-profile-card">
+                                <div class="card-header bg-primary text-white d-flex justify-content-center align-items-center">
+                                    <h5 class="mb-0">User Profile</h5>
+                                </div>
+                                <div class="text-center mb-0 mt-2 position-relative">
+                                    {% if request.user.userprofile.profile_image %}
+                                    <img src="{{ request.user.userprofile.profile_image.url }}"
+                                        class="profile-image img-fluid rounded-circle" alt="Profile Picture">
+                                    {% else %}
+                                    <img src="{% static 'assets/img/default-profile.jpg' %}"
+                                        class="profile-image img-fluid rounded-circle" alt="Default Profile Picture">
+                                    {% endif %}
+                                    <p class="user-name">{{ request.user.userprofile.name }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card p-0 ms-auto user-details-card">
+                                    <div class="card-header bg-primary text-white d-flex justify-content-center align-items-center">
+                                        <h5 class="mb-0">User Details</h5>
+                                    </div>
+                                    <div class="p-4 pb-2 pt-4">
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <p><strong>Email:</strong> {{ request.user.email }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <p><strong>Contact Number:</strong> {{ request.user.userprofile.phone_number }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-md-12">
+                                                <p><strong>Address:</strong> {{ request.user.userprofile.permanent_address }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="animate__animated animate__fadeInLeft p-0 pe-2">
+                                <div class="card">
+                                    <div class="card-header bg-primary text-white d-flex justify-content-center align-items-center">
+                                        <h5 class="mb-0">Recently Viewed Properties</h5>
+                                    </div>
+                                    <div class="p-3">
+                                        <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Beatae, illum doloribus. Hic laborum repellat reiciendis, dolorum debitis laboriosam neque quaerat doloremque tenetur, tempore facilis doloribus fugiat animi natus perferendis sapiente sed perspiciatis modi itaque numquam quae praesentium odit illum officiis! Nostrum consequatur est expedita ex officiis quod non nisi cum? Hic nobis est deleniti. Omnis necessitatibus blanditiis tempora possimus soluta aut sint rerum? Libero, officia quae consequatur ut animi, molestiae officiis provident, magnam ea accusantium similique impedit recusandae error mollitia sequi perferendis quod nobis nihil accusamus itaque dicta reprehenderit at aut dolores? Quia modi ipsa animi, minus amet id sequi maiores magni dignissimos doloremque libero quas vel obcaecati provident et iusto accusantium nesciunt consequuntur sapiente quam eaque. Expedita corrupti incidunt voluptates hic tenetur. Excepturi deleniti, enim pariatur tenetur soluta accusantium aliquid blanditiis repudiandae, sequi quibusdam non officia ex iusto magni expedita dolorum voluptate quidem earum quae rerum repellendus explicabo sed vero suscipit! Explicabo sequi atque, iure odio harum ullam fugit rem molestiae ipsum non asperiores assumenda, cum quam error similique nihil ab vero voluptatem beatae, enim inventore! Est, voluptatem sequi? Illum nobis ea commodi nemo libero numquam eius animi saepe, repudiandae, consectetur accusamus neque aliquam ipsum iure enim odit obcaecati.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
