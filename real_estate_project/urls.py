@@ -23,8 +23,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home.urls')),
     path('api/', include('api.urls')),
-    path('user_dashboard', include('user_dashboard.urls')),
-    path('agent_dashboard', include('agent_dashboard.urls')),
+    path('user_dashboard/', include('user_dashboard.urls')),
+    path('agent_dashboard/', include('agent_dashboard.urls')),
     path('authentication/', include('authentication.urls')),
+    path('accounts/', include('authentication.urls')),
     path('audio_switch/', include('audio.urls')),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

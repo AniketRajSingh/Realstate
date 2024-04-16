@@ -1,0 +1,292 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css"
+    integrity="sha512-jU/7UFiaW5UBGODEopEqnbIAHOI8fO6T99m7Tsmqs2gkdujByJfkCbbfPSN4Wlqlb9TGnsuC0YgUgWkRBK7B9A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+    /* Dropzone styles */
+    .dropzone {
+        border: 2px dashed #ccc;
+        border-radius: 5px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .dropzone.dz-drag-hover {
+        border-color: #666;
+        background-color: #f5f5f5;
+    }
+
+    .dz-message {
+        font-size: 16px;
+        color: #666;
+    }
+
+    .dz-message span {
+        font-weight: bold;
+    }
+
+    .dz-preview {
+        display: none;
+    }
+
+    /* Additional styles for the preview image */
+    .dz-preview .dz-image {
+        max-width: 100%;
+        max-height: 200px;
+    }
+
+    .dz-preview .dz-details {
+        padding: 10px;
+        background-color: #f5f5f5;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+
+    .dz-preview .dz-details .dz-filename {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .dz-preview .dz-details .dz-size {
+        font-size: 12px;
+        color: #666;
+    }
+    .profile-image,#previewProfilePic{
+        width:200px;
+        aspect-ratio:1;
+        object-fit: cover;
+    }
+    .list-group-flush>.list-group-item:last-child {
+        border-bottom-width: 1px!important;
+        border-radius:0;
+    }
+</style>
+{% endblock styles %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block body %}
+
+<section class="section-property section-t8">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card h-100 animate__animated animate__fadeInLeft">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">My Profile</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'user_dashboard' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-passport me-2"></i>
+                            Dashboard
+                        </a>
+                        <a href="{% url 'user_profile' %}" class="list-group-item list-group-item-action active">
+                            <i class="bi bi-person me-2"></i>
+                            Profile
+                        </a>
+                        <a href="{% url 'enlist_properties' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-houses me-2"></i>
+                            Properties
+                        </a>
+                        <a href="{% url 'settings' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-gear me-2"></i>
+                            Settings
+                        </a>
+                        <a href="{% url 'logout' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 animate__animated animate__fadeInRight">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Edit Profile Image</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="d-flex flex-column align-items-center justify-content-center mb-3">
+                                    {% if request.user.agentprofile.profile_image %}
+                                    <img src="{{ request.user.agentprofile.profile_image.url }}"
+                                        class="profile-image img-fluid rounded-circle" alt="Profile Picture">
+                                    {% else %}
+                                    <img src="{% static 'assets/img/default-profile.jpg' %}"
+                                        class="profile-image img-fluid rounded-circle" alt="Default Profile Picture">
+                                    {% endif %}
+                                    <a href="#" class="btn btn-primary btn-sm mt-2 change-profile-pic-btn"
+                                        data-bs-toggle="modal" data-bs-target="#changeProfilePicModal">Change Profile
+                                        Picture</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 animate__animated animate__fadeInRight">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Edit Profile</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <form class="col-md-12" id="profile-update-form" method="post" action="{% url 'update_agent_profile' %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">First Name</label>
+                                        <input name='first_name' type="text" class="form-control"
+                                            value="{{ request.user.first_name }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Last Name</label>
+                                        <input name='last_name' type="text" class="form-control" value="{{ request.user.last_name }}">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" value="{{ request.user.email }}" name="email" >
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Contact Number</label>
+                                    <input type="text" class="form-control" value="{{ request.user.agentprofile.phone_number }}" name='phone_number'>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Agent Id</label>
+                                    <input type="text" class="form-control" value="{{ request.user.agentprofile.agent_id }}" name='agent_id' disabled>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Govt Id</label>
+                                    <input type="text" class="form-control" value="{{ request.user.agentprofile.govt_id }}" name='govt_id' disabled>
+                                    <a class="text-success link-a" href="{% url 'agent_reverification' %}">Update Govt Id</a>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Locality</label>
+                                    <input type="text" class="form-control" value="{{ request.user.agentprofile.locality }}" name='locality'>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Address</label>
+                                    <textarea class="form-control" rows="3" name='permanent_address'>{{ request.user.agentprofile.address }}</textarea>
+                                </div>
+                                <div class="text-end">
+                                    <button class="btn btn-primary save-profile-btn w-100">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Change Profile Picture Modal -->
+<div class="modal fade" id="changeProfilePicModal" tabindex="-1" aria-labelledby="changeProfilePicModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changeProfilePicModalLabel">Change Profile Picture</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <img id="previewProfilePic" class="img-fluid rounded-circle"
+                        src="{% if request.user.agentprofile.profile_image %}{{ request.user.agentprofile.profile_image.url }}{% else %}{% static 'assets/img/default-profile.jpg' %}{% endif %}"
+                        alt="Preview Profile Picture">
+                </div>
+                <div class="mb-3">
+                    <label for="profilePicInput" class="form-label">Upload Profile Picture</label>
+                    <form action="/user_dashboard/update-profile-picture/" class="dropzone" name="profile_image" id="dropzone">
+                        <div class="dz-message" data-dz-message>
+                            <span>Drop file here or click to upload</span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveProfilePicBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"
+    integrity="sha512-U2WE1ktpMTuRBPoCFDzomoIorbOyUv0sP8B+INA3EzNAhehbzED1rOJg6bCqPf/Tuposxb5ja/MAUnC8THSbLQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer">
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let previousFile = null; // Variable to store the previously selected file
+
+        // Remove existing Dropzone instances, if any
+        if (Dropzone.instances.length > 0) {
+            Dropzone.instances.forEach(function (instance) {
+                instance.destroy();
+            });
+        }
+
+        // Initialize Dropzone
+        const dropzone = new Dropzone("#dropzone", {
+            url: "/agent_dashboard/update-profile-picture/",
+            paramName: "profile_image",
+            maxFiles: 1,
+            acceptedFiles: "image/*",
+            addRemoveLinks: true,
+            clickable: true,
+            dictDefaultMessage: "Drop file here or click to upload",
+            autoProcessQueue: false, // Prevent automatic uploads
+            init: function () {
+                this.on("addedfile", (file) => {
+                    console.log("A file has been added");
+                });
+
+                this.on("success", function (file, response) {
+                    if (response.success) {
+                        location.reload();
+                    }
+                });
+
+                this.on("error", function (file, errorMessage) {
+                    console.error("Error:", errorMessage);
+                });
+
+                // Event handler for removing file
+                this.on("removedfile", function (file) {
+                    if (file === previousFile) {
+                        previousFile = null;
+                    }
+                });
+            },
+        });
+
+        // Event listener for adding files
+        dropzone.on("addedfile", function (file) {
+            if (previousFile) {
+                // Remove the previously selected file
+                dropzone.removeFile(previousFile);
+            }
+            previousFile = file;
+        });
+
+        // Save profile picture
+        const saveProfilePicBtn = document.getElementById("saveProfilePicBtn");
+        saveProfilePicBtn.addEventListener("click", function () {
+            // Trigger the upload
+            dropzone.processQueue();
+        });
+    });
+</script>
+
+{% endblock javascript %}

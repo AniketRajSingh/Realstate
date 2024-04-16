@@ -1,0 +1,958 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css"
+    integrity="sha512-jU/7UFiaW5UBGODEopEqnbIAHOI8fO6T99m7Tsmqs2gkdujByJfkCbbfPSN4Wlqlb9TGnsuC0YgUgWkRBK7B9A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+    .card {
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .list-group-flush>.list-group-item:last-child {
+        border-bottom-width: 1px!important;
+        border-radius:0;
+    }
+    .de-icon {
+        color: #ff6b6b;
+        font-size: 24px;
+        cursor: pointer;
+        transition: color 0.3s ease-in-out;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 999;
+        background-color: white;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+      }
+      .de-icon:hover{
+        scale: 1.1;
+      }
+      .edit-icon{
+        color: #ffe16b;
+        top: 50px;
+        font-size: 20px;
+      }
+      .dropzone {
+        border: 2px dashed #ccc;
+        border-radius: 5px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .dropzone.dz-drag-hover {
+        border-color: #666;
+        background-color: #f5f5f5;
+    }
+
+    .dz-message {
+        font-size: 16px;
+        color: #666;
+    }
+
+    .dz-message span {
+        font-weight: bold;
+    }
+
+    .dz-preview {
+        display: none;
+    }
+    
+    .dz-progress {
+        top: auto!important;
+        bottom: -10%!important;
+        background-color: #007aff!important;
+        display: none;
+    }
+    .dz-remove{
+        text-decoration: none;
+        color: #ff6b6b;
+    }
+
+    .dz-preview .dz-image {
+        max-width: 100%;
+        max-height: 200px;
+    }
+
+    .dz-preview .dz-details {
+        padding: 10px;
+        background-color: #f5f5f5;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+
+    .dz-preview .dz-details .dz-filename {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .dz-preview .dz-details .dz-size {
+        font-size: 12px;
+        color: #666;
+    }
+    .current_property_img{
+        width: 200px;
+        margin-block: 10px;
+        margin-inline: 0
+    }
+    
+    .custom-modal .modal-content {
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .edit-property-form .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .edit-property-form label {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .edit-property-form .current_property_img {
+      margin-bottom: 1rem;
+    }
+
+    .edit-property-form .current_property_img img {
+      max-width: 200px;
+      height: auto;
+    }
+
+    .edit-property-form .dropzone {
+      border: 2px dashed #ccc;
+      border-radius: 5px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+
+    .edit-property-form .dropzone.dz-drag-hover {
+      border-color: #666;
+      background-color: #f5f5f5;
+    }
+
+    .edit-property-form .dz-message {
+      font-size: 16px;
+      color: #666;
+    }
+
+    .edit-property-form .dz-message span {
+      font-weight: bold;
+    }
+
+    .edit-property-form .dz-preview {
+      display: none;
+    }
+
+    .edit-property-form .modal-header .close {
+      display: none;
+    }
+
+    .edit-property-form .modal-header .btn-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #888;
+      cursor: pointer;
+      transition: color 0.3s ease-in-out;
+    }
+
+    .edit-property-form .modal-header .btn-close:hover {
+      color: #333;
+    }
+
+    .custom-modal .modal-content {
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .add-property-form .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .add-property-form label {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .add-property-form .dropzone {
+        border: 2px dashed #ccc;
+        border-radius: 5px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        margin-bottom: 1rem;
+    }
+    
+    .add-property-form .dropzone.dz-drag-hover {
+        border-color: #666;
+        background-color: #f5f5f5;
+    }
+    
+    .add-property-form .dz-message {
+        font-size: 16px;
+        color: #666;
+    }
+    
+    .add-property-form .dz-message span {
+        font-weight: bold;
+    }
+    
+    .add-property-form .dz-preview {
+        display: none;
+    }
+    
+    .add-property-form .modal-header .close {
+        display: none;
+    }
+    
+    .add-property-form .modal-header .btn-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #888;
+        cursor: pointer;
+        transition: color 0.3s ease-in-out;
+    }
+    
+    .add-property-form .modal-header .btn-close:hover {
+        color: #333;
+    }
+</style>
+{% endblock styles %}
+{% block body %}
+<section class="section-property section-t8">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card h-100 animate__animated animate__fadeInLeft">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">My Profile</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'user_dashboard' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-passport me-2"></i>
+                            Dashboard
+                        </a>
+                        <a href="{% url 'user_profile' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-person me-2"></i>
+                            Profile
+                        </a>
+                        <a href="{% url 'enlist_properties' %}" class="list-group-item list-group-item-action active">
+                            <i class="bi bi-houses me-2"></i>
+                            Properties
+                        </a>
+                        <a href="{% url 'settings' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-gear me-2"></i>
+                            Settings
+                        </a>
+                        <a href="{% url 'logout' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="h-100 animate__animated animate__fadeInRight">
+                    <div class="card-body p-0">
+                        <div class="row">
+                            <div class="animate__animated animate__fadeInLeft p-0 pe-2">
+                                <div class="card">
+                                    <div class="card-header bg-primary text-white d-flex justify-content-center align-items-center">
+                                        <h5 class="mb-0">Recently Enlisted Properties</h5>
+                                    </div>
+                                    <div class="p-3 row">
+                                        {% for property in recently_enlisted_properties %}
+                                        <div class="col-md-4">
+                                            <div class="card-box-a card-shadow">
+                                                <div class="img-box-a">
+                                                    {% if property.property_image %}
+                                                    <img src="{{ property.property_image.url }}" alt="{{ property.name }}" class="img-a img-fluid">
+                                                    {% else %}
+                                                    <img src="/static/assets/img/property-default.jpg" alt="{{ property.name }}" class="img-a img-fluid">
+                                                    {% endif %}
+                                                    <div class="property-actions">
+                                                        <a class="edit-property" href="#" data-toggle="modal" data-target="#editPropertyModal" data-property-id="{{ property.id }}">
+                                                            <i class="bi bi-pencil-fill de-icon edit-icon"></i>
+                                                        </a>
+                                                        <a class="delete-property" href="#" data-toggle="modal" data-target="#deletePropertyModal" data-property-id="{{ property.id }}">
+                                                            <i class="bi bi-trash2-fill de-icon"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div class="card-overlay">
+                                                    <div class="card-overlay-a-content">
+                                                        <div class="card-header-a">
+                                                            <h2 class="card-title-a">
+                                                                <a href="#">{{ property.name }}</a>
+                                                            </h2>
+                                                        </div>
+                                                        <div class="card-body-a">
+                                                            <div class="price-box d-flex">
+                                                                <span class="price-a">{{ property.type }}</span>
+                                                            </div>
+                                                            <a href="{% url 'property_details' property.property_id %}" class="link-a">Click here to view
+                                                                <span class="bi bi-chevron-right"></span>
+                                                            </a>
+                                                        </div>
+                                                        <div class="card-footer-a">
+                                                            <ul class="card-info d-flex justify-content-around">
+                                                                {% if property.area != 0 %}
+                                                                <li>
+                                                                    <h4 class="card-info-title">Area</h4>
+                                                                    <span>{{ property.area }} m<sup>2</sup></span>
+                                                                </li>
+                                                                {% elif property.bedrooms != 0 %}
+                                                                <li>
+                                                                    <h4 class="card-info-title">Beds</h4>
+                                                                    <span>{{ property.bedrooms }}</span>
+                                                                </li>
+                                                                {% elif property.bathrooms != 0 %}
+                                                                <li>
+                                                                    <h4 class="card-info-title">Baths</h4>
+                                                                    <span>{{ property.bathrooms }}</span>
+                                                                </li>
+                                                                {% elif property.kitchens != 0 %}
+                                                                <li>
+                                                                    <h4 class="card-info-title">Kitchens</h4>
+                                                                    <span>{{ property.kitchens }}</span>
+                                                                </li>
+                                                                {% endif %}
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="p-3 row">
+                                        <button type="button" id="addpropertybtn" class="btn btn-primary" data-toggle="modal" data-target="#addPropertyModalPart1">
+                                            Add Property
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Edit Property Modal -->
+<div class="modal fade custom-modal" id="editPropertyModal" tabindex="-1" role="dialog" aria-labelledby="editPropertyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-center" id="editPropertyModalLabel">Edit Property</h5>
+          <div class="btn-close" data-dismiss="modal" aria-label="Close">
+          </div>
+        </div>
+        <div class="modal-body">
+          <form id="editPropertyForm" class="edit-property-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="id_name">Name:</label>
+              <input type="text" class="form-control" id="id_name" name="name" value="{{ property.name }}" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label>Property Image:</label>
+              <div class="current_property_img">
+                <img id="id_property_image" class="img-a img-fluid">
+              </div>
+              <input type="file" id="EditPropertyImage" style="display: none;" class="img-a img-fluid" name="property_image" disabled>
+              <div id="propertyImageDropzone">
+                <div class="dz-message" data-dz-message="">
+                  <span>Drop file here or click to upload</span>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="id_lat">Latitude:</label>
+              <input type="text" class="form-control" id="id_lat" name="lat" value="{{ property.lat }}">
+            </div>
+            <div class="form-group">
+              <label for="id_lng">Longitude:</label>
+              <input type="text" class="form-control" id="id_lng" name="lng" value="{{ property.lng }}">
+            </div>
+            <div class="form-group">
+              <label for="id_type">Type:</label>
+              <select class="form-select" id="id_type" name="type">
+                {% for choice in property_types %}
+                  <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="id_description">Description:</label>
+              <textarea class="form-control" id="id_description" name="description">{{ property.description }}</textarea>
+            </div>
+            <div class="form-group">
+              <label for="id_price">Price:</label>
+              <input type="text" class="form-control" id="id_price" name="price" value="{{ property.price }}">
+            </div>
+            <div class="form-group">
+              <label for="id_seller_name">Seller Name:</label>
+              <input type="text" class="form-control" id="id_seller_name" name="seller_name" value="{{ property.seller_name }}">
+            </div>
+            <div class="form-group">
+              <label for="id_locality">Locality:</label>
+              <input type="text" class="form-control" id="id_locality" name="locality" value="{{ property.locality }}" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label for="id_contact">Contact:</label>
+              <input type="text" class="form-control" id="id_contact" name="contact" value="{{ property.contact }}" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label for="id_pincode">Pincode:</label>
+              <input type="text" class="form-control" id="id_pincode" name="pincode" value="{{ property.pincode }}" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label for="id_bedrooms">Bedrooms:</label>
+              <input type="number" class="form-control" id="id_bedrooms" name="bedrooms" value="{{ property.bedrooms }}">
+            </div>
+            <div class="form-group">
+              <label for="id_bathrooms">Bathrooms:</label>
+              <input type="number" class="form-control" id="id_bathrooms" name="bathrooms" value="{{ property.bathrooms }}">
+            </div>
+            <div class="form-group">
+              <label for="id_kitchens">Kitchens:</label>
+              <input type="number" class="form-control" id="id_kitchens" name="kitchens" value="{{ property.kitchens }}">
+            </div>
+            <div class="form-group">
+              <label for="id_floor">Floor:</label>
+              <input type="number" class="form-control" id="id_floor" name="floor" value="{{ property.floor }}">
+            </div>
+            <div class="form-group">
+              <label for="id_area">Area:</label>
+              <input type="number" class="form-control" id="id_area" name="area" value="{{ property.area }}">
+            </div>
+            <button type="submit" id="editPropertyFormSubmit" class="btn btn-primary">Save changes</button>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+  
+<!-- Delete Property Modal -->
+<div class="modal fade custom-modal" id="deletePropertyModal" tabindex="-1" role="dialog" aria-labelledby="deletePropertyModalLabel" aria-hidden="true">
+    <div style="margin-top: 35vh;" class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deletePropertyModalLabel">Delete Property</h5>
+          <div class="btn-close" data-dismiss="modal" aria-label="Close">
+          </div>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete this property?</p>
+        </div>
+        <br>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteProperty">Delete</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- Add Property Modal - Part 1 -->
+<div class="modal fade custom-modal" id="addPropertyModalPart1" tabindex="-1" role="dialog" aria-labelledby="addPropertyModalLabelPart1" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-center" id="addPropertyModalLabelPart1">Add Property - Part 1</h5>
+                <div class="btn-close" data-dismiss="modal" aria-label="Close">
+                </div>
+            </div>
+            <div class="modal-body">
+                <form id="addPropertyFormPart1" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="id_name">Name:</label>
+                        <input type="text" class="form-control" id="id_name" name="name" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_lat">Latitude:</label>
+                        <input type="text" class="form-control" id="id_lat" name="lat">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_lng">Longitude:</label>
+                        <input type="text" class="form-control" id="id_lng" name="lng">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_type">Type:</label>
+                        <select class="form-select" id="id_type" name="type">
+                            {% for choice in property_types %}
+                            <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_description">Description:</label>
+                        <textarea class="form-control" id="id_description" name="description"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_price">Price:</label>
+                        <input type="text" class="form-control" id="id_price" name="price">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_seller_name">Seller Name:</label>
+                        <input type="text" class="form-control" id="id_seller_name" name="seller_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_locality">Locality:</label>
+                        <input type="text" class="form-control" id="id_locality" name="locality" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_contact">Contact:</label>
+                        <input type="text" class="form-control" id="id_contact" name="contact" autocomplete="off">
+                    </div>
+                    <br>
+                    <button type="button" class="btn btn-primary" id="nextButton">Next</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Property Modal - Part 2 -->
+<div class="modal fade custom-modal" id="addPropertyModalPart2" tabindex="-1" role="dialog" aria-labelledby="addPropertyModalLabelPart2" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-center" id="addPropertyModalLabelPart2">Add Property - Part 2</h5>
+                <div class="btn-close" data-dismiss="modal" aria-label="Close">
+                </div>
+            </div>
+            <div class="modal-body">
+                <form id="addPropertyFormPart2" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="id_pincode">Pincode:</label>
+                        <input type="text" class="form-control" id="id_pincode" name="pincode" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_bedrooms">Bedrooms:</label>
+                        <input type="number" class="form-control" id="id_bedrooms" name="bedrooms">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_bathrooms">Bathrooms:</label>
+                        <input type="number" class="form-control" id="id_bathrooms" name="bathrooms">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_kitchens">Kitchens:</label>
+                        <input type="number" class="form-control" id="id_kitchens" name="kitchens">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_floor">Floor:</label>
+                        <input type="number" class="form-control" id="id_floor" name="floor">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_area">Area:</label>
+                        <input type="number" class="form-control" id="id_area" name="area">
+                    </div>
+                    <br>
+                    <button type="button" class="btn btn-primary" id="nextButton1">Next</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Media Upload Modal -->
+<div class="modal fade custom-modal" id="mediaUploadModal" tabindex="-1" role="dialog" aria-labelledby="mediaUploadModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-center" id="mediaUploadModalLabel">Upload Media</h5>
+                <div class="btn-close" data-dismiss="modal" aria-label="Close">
+                </div>
+            </div>
+            <div class="modal-body">
+                <div id="propertyImageDropzone1">
+                    <div class="dz-message" data-dz-message="">
+                        <span>Drop file here or click to upload</span>
+                    </div>
+                </div>
+                <br>
+                <button type="button" class="btn btn-primary" id="submitReviewButton">Submit for Review</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Final Modal for Review and Submission -->
+<div class="modal fade custom-modal" id="submitReviewModal" tabindex="-1" role="dialog" aria-labelledby="submitReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-center" id="submitReviewModalLabel">Review Property Details</h5>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Display collected data here -->
+                <form id="submitReviewForm" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="reviewPropertyName">Name:</label>
+                        <input type="text" class="form-control" id="reviewPropertyName" name="name" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewPropertyLat">Latitude:</label>
+                        <input type="text" class="form-control" id="reviewPropertyLat" name="lat" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewPropertyLng">Longitude:</label>
+                        <input type="text" class="form-control" id="reviewPropertyLng" name="lng" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewPropertyType">Type:</label>
+                        <input type="text" class="form-control" id="reviewPropertyType" name="type" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="ImageInput">Image:</label>
+                        <br>
+                        <img id="reviewPropertyImage" class="img-a img-fluid">
+                        <input type="file" id="imageInput" style="display: none;" class="img-a img-fluid" name="property_image" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewPropertyDescription">Description:</label>
+                        <textarea class="form-control" id="reviewPropertyDescription" name="description" readonly></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewPropertyPrice">Price:</label>
+                        <input type="text" class="form-control" id="reviewPropertyPrice" name="price" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewPropertySellerName">Seller Name:</label>
+                        <input type="text" class="form-control" id="reviewPropertySellerName" name="seller_name" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewPropertyLocality">Locality:</label>
+                        <input type="text" class="form-control" id="reviewPropertyLocality" name="locality" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewPropertyContact">Contact:</label>
+                        <input type="text" class="form-control" id="reviewPropertyContact" name="contact" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewPropertyPincode">Pincode:</label>
+                        <input type="text" class="form-control" id="reviewPropertyPincode" name="pincode" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewPropertyBedrooms">Bedrooms:</label>
+                        <input type="number" class="form-control" id="reviewPropertyBedrooms" name="bedrooms" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewPropertyBathrooms">Bathrooms:</label>
+                        <input type="number" class="form-control" id="reviewPropertyBathrooms" name="bathrooms" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewPropertyKitchens">Kitchens:</label>
+                        <input type="number" class="form-control" id="reviewPropertyKitchens" name="kitchens" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewPropertyFloor">Floor:</label>
+                        <input type="number" class="form-control" id="reviewPropertyFloor" name="floor" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewPropertyArea">Area:</label>
+                        <input type="number" class="form-control" id="reviewPropertyArea" name="area" readonly>
+                    </div>
+                    <br>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="submitButton">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
+{% block javascript %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"
+    integrity="sha512-U2WE1ktpMTuRBPoCFDzomoIorbOyUv0sP8B+INA3EzNAhehbzED1rOJg6bCqPf/Tuposxb5ja/MAUnC8THSbLQ=="
+    crossorigin="anonymous" referrerpolicy="no-reference">
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    // Initialize Dropzone for property image upload
+    const propertyImageDropzone = new Dropzone("#propertyImageDropzone", {
+      url: "/upload_image_endpoint/",
+      maxFiles: 1,
+      acceptedFiles: "image/*",
+      addRemoveLinks: true,
+      clickable: true,
+      dictDefaultMessage: "Drop file here or click to upload",
+      autoProcessQueue: false, // Prevent automatic uploads
+      init: function () {
+        this.on("addedfile", (file) => {
+            console.log("A file has been added");
+            document.querySelectorAll('.dz-preview').forEach(function(el) {
+                el.style.display = 'inline-block';
+            });
+
+            // Create a FileList containing the file
+            var fileList = new DataTransfer();
+            fileList.items.add(file);
+
+            // Append the FileList to the other input field
+            var imageInput = document.getElementById('EditPropertyImage');
+            imageInput.files = fileList.files;
+        });
+
+        this.on("success", function (file, response) {
+          if (response.success) {
+            // Handle successful upload, e.g., refresh property details
+            console.log("Upload successful");
+          }
+        });
+
+        this.on("error", function (file, errorMessage) {
+          console.error("Error:", errorMessage);
+        });
+
+        // Event handler for removing file
+        this.on("removedfile", function (file) {
+          console.log("File removed:", file);
+        });
+      },
+    });
+
+    // Initialize Dropzone1 for property image upload
+    const propertyImageDropzone1 = new Dropzone("#propertyImageDropzone1", {
+        url: "/upload_image_endpoint/",
+        maxFiles: 1,
+        acceptedFiles: "image/*",
+        addRemoveLinks: true,
+        clickable: true,
+        paramName: "file",
+        dictDefaultMessage: "Drop file here or click to upload",
+        autoProcessQueue: false, // Prevent automatic uploads
+        init: function () {
+          this.on("addedfile", (file) => {
+            document.querySelectorAll('.dz-preview').forEach(function(el) {
+                            el.style.display = 'inline-block';
+                        });
+            // Create a FileList containing the file
+            var fileList = new DataTransfer();
+            fileList.items.add(file);
+
+            // Append the FileList to the other input field
+            var imageInput = document.getElementById('imageInput');
+            imageInput.files = fileList.files;
+
+          });
+
+          this.on("thumbnail", function(file, dataUrl) {
+            document.getElementById("reviewPropertyImage").src = dataUrl;
+        });
+        
+          this.on("success", function (file, response) {
+            if (response.success) {
+              // Handle successful upload, e.g., refresh property details
+              console.log("Upload successful");
+            }
+          });
+        
+          this.on("error", function (file, errorMessage) {
+            console.error("Error:", errorMessage);
+          });
+        
+          // Event handler for removing file
+          this.on("removedfile", function (file) {
+            console.log("File removed:", file);
+          });
+        },
+      });
+
+    document.getElementById("propertyImageDropzone").classList.add("dropzone");
+    document.getElementById("propertyImageDropzone1").classList.add("dropzone");
+
+    // Event listener for form submission
+    document.getElementById("editPropertyForm").addEventListener("submit", function (event) {
+      event.preventDefault(); // Prevent default form submission
+
+      // Process the queued files for upload
+      propertyImageDropzone.processQueue();
+    });
+
+    // Close modal on cancel and close button click
+    $('.btn-close, .btn-secondary').click(function () {
+      $('#editPropertyModal, #deletePropertyModal, #addPropertyModalPart1, #addPropertyModalPart2, #mediaUploadModal, #submitReviewModal').modal('hide');
+    });
+      });
+
+      $(document).ready(function() {
+    // Delete Property
+    $(document).on('click', '.delete-property', function(e) {
+      e.preventDefault();
+      var propertyId = $(this).data('property-id');
+      $('#deletePropertyModal').modal('show');
+      $('#confirmDeleteProperty').on('click', function() {
+        deleteProperty(propertyId);
+      });
+    });
+
+    // Edit Property
+    $(document).on('click', '.edit-property', function(e) {
+      e.preventDefault();
+      var propertyId = $(this).data('property-id');
+      $('#editPropertyModal').modal('show');
+      // Load property details into the form
+      $('#editPropertyFormSubmit').data('property-id', propertyId);
+      loadPropertyDetails(propertyId);
+    });
+
+    // Submit Edit Property Form
+    $(document).on('click', '#editPropertyFormSubmit', function(e) {
+      e.preventDefault();
+      var formData = new FormData($('#editPropertyForm')[0]);
+      var propertyId = $(this).data('property-id');
+      $.ajax({
+        url: '/agent_dashboard/properties/' + propertyId + '/edit/',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+          $('#editPropertyModal').modal('hide');
+          // Refresh the property list or display a success message
+        },
+        error: function(xhr, errmsg, err) {
+          console.log(xhr.status + ": " + xhr.responseText);
+        }
+      });
+    });
+      });
+
+      function deleteProperty(propertyId) {
+    $.ajax({
+      url: '/agent_dashboard/properties/' + propertyId + '/delete/',
+      type: 'POST',
+      data: {
+        csrfmiddlewaretoken: '{{ csrf_token }}'
+      },
+      success: function(response) {
+        $('#deletePropertyModal').modal('hide');
+        // Refresh the property list or display a success message
+      },
+      error: function(xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+      }
+
+      function loadPropertyDetails(propertyId) {
+    // Make an AJAX request to get the property details and fill the form fields
+    $.ajax({
+      url: '/api/properties/' + propertyId + '/details/',
+      type: 'GET',
+      success: function(response) {
+        // Assuming response contains property details in JSON format
+        $('#id_name').val(response.name);
+        $('#id_lat').val(response.lat);
+        $('#id_lng').val(response.lng);
+        $('#id_type').val(response.type);
+        $('#id_property_image').prop('src', response.property_image);
+        $('#id_property_image').prop('alt', response.name);
+        $('#id_description').val(response.description);
+        $('#id_price').val(response.price);
+        $('#id_seller_name').val(response.seller_name);
+        $('#id_locality').val(response.locality);
+        $('#id_contact').val(response.contact);
+        $('#id_pincode').val(response.pincode);
+        $('#id_bedrooms').val(response.bedrooms);
+        $('#id_bathrooms').val(response.bathrooms);
+        $('#id_kitchens').val(response.kitchens);
+        $('#id_floor').val(response.floor);
+        $('#id_area').val(response.area);
+        $('#id_type').val(response.type);
+      },
+      error: function(xhr, errmsg, err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+      }
+    });
+      }
+</script>
+<script>
+    // Show Add Property Modal - Part 1 on clicking addpropertybtn
+    document.getElementById('addpropertybtn').addEventListener('click', function() {
+        $('#addPropertyModalPart1').modal('show');
+    });
+
+    // Hide Add Property Modal - Part 1 and Show Part 2 on clicking NextButton in Part 1
+    document.getElementById('nextButton').addEventListener('click', function() {
+        $('#addPropertyModalPart1').modal('hide');
+        $('#addPropertyModalPart2').modal('show');
+    });
+
+    // Hide Add Property Modal - Part 2 and Show Media Upload Modal on clicking NextButton1 in Part 2
+    document.getElementById('nextButton1').addEventListener('click', function() {
+        $('#addPropertyModalPart2').modal('hide');
+        $('#mediaUploadModal').modal('show');
+    });
+
+    // On clicking Submit for Review, show the new modal with collected data
+    document.getElementById('submitReviewButton').addEventListener('click', function() {
+        // Collect data from Part 1 and Part 2
+        var formDataPart1 = $('#addPropertyFormPart1').serializeArray();
+        var formDataPart2 = $('#addPropertyFormPart2').serializeArray();
+        var formimage = $('#addPropertyFormPart2').serializeArray();
+        
+        // Populate the final modal with the collected data
+        $('#reviewPropertyName').val(getValue(formDataPart1, 'name'));
+        $('#reviewPropertyLat').val(getValue(formDataPart1, 'lat'));
+        $('#reviewPropertyLng').val(getValue(formDataPart1, 'lng'));
+        $('#reviewPropertyType').val(getValue(formDataPart1, 'type'));
+        $('#reviewPropertyDescription').val(getValue(formDataPart1, 'description'));
+        $('#reviewPropertyPrice').val(getValue(formDataPart1, 'price'));
+        $('#reviewPropertySellerName').val(getValue(formDataPart1, 'seller_name'));
+        $('#reviewPropertyLocality').val(getValue(formDataPart1, 'locality'));
+        $('#reviewPropertyContact').val(getValue(formDataPart1, 'contact'));
+        $('#reviewPropertyPincode').val(getValue(formDataPart2, 'pincode'));
+        $('#reviewPropertyBedrooms').val(getValue(formDataPart2, 'bedrooms'));
+        $('#reviewPropertyBathrooms').val(getValue(formDataPart2, 'bathrooms'));
+        $('#reviewPropertyKitchens').val(getValue(formDataPart2, 'kitchens'));
+        $('#reviewPropertyFloor').val(getValue(formDataPart2, 'floor'));
+        $('#reviewPropertyArea').val(getValue(formDataPart2, 'area'));
+        $('#reviewPropertyImage').prop('alt', getValue(formDataPart1, 'name'));
+
+        // Show the final modal
+        $('#submitReviewModal').modal('show');
+    });
+    
+    // Helper function to get value from form data array
+    function getValue(formData, fieldName) {
+        for (var i = 0; i < formData.length; i++) {
+            if (formData[i].name === fieldName) {
+                return formData[i].value;
+            }
+        }
+        return '';
+    }
+
+    // On clicking Submit button in the final modal, submit the form
+    document.getElementById('submitButton').addEventListener('click', function() {
+        document.getElementById('submitReviewForm').submit();
+    });
+</script>
+{% endblock javascript %}

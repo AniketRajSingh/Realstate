@@ -4,13 +4,15 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from agent_dashboard.models import Property
-from .models import Wishlist
+from .models import Wishlist, RecentlyViewed
 from .forms import ChangePasswordForm
 from django.contrib.auth import update_session_auth_hash
 
 def user_dashboard(request):
     if hasattr(request.user, 'userprofile'):
-        return render(request, 'user_dashboard/user_dashboard.html')
+        recently_viewed_properties = RecentlyViewed.objects.filter(user=request.user).values_list('property', flat=True)
+        recently_viewed_properties = Property.objects.filter(id__in=recently_viewed_properties)
+        return render(request, 'user_dashboard/user_dashboard.html', {'recently_viewed_properties': recently_viewed_properties})
     elif hasattr(request.user, 'agentprofile'):
         return redirect('agent_dashboard')  # Redirect agents to agent dashboard
     else:
@@ -24,12 +26,19 @@ def user_profile(request):
     else:
         return redirect(reverse('login'))  # Redirect to login if no profile is associated
 
+def user_wishlist(request):
+    wishlist_items = []
+    if request.user.is_authenticated and hasattr(request.user, 'userprofile'):
+        user_profile = request.user.userprofile
+        wishlist_items = Wishlist.objects.filter(user_profile=user_profile).values_list('property', flat=True)
+        properties = Property.objects.filter(id__in=wishlist_items)
+    else:
+        properties = None
+    return {'wishlist_items': properties}
+
 @login_required
 def wishlist(request):
-    user_profile = request.user.userprofile
-    wishlist_items = Wishlist.objects.filter(user_profile=user_profile).values_list('property', flat=True)
-    properties = Property.objects.filter(id__in=wishlist_items)
-    return render(request, 'user_dashboard/wishlist.html', {'wishlist_items': properties})
+    return render(request, 'user_dashboard/wishlist.html')
 
 @login_required
 def settings(request):
@@ -55,6 +64,8 @@ def add_to_wishlist(request, property_id):
         user_profile = request.user.userprofile
         wishlist_item, created = Wishlist.objects.get_or_create(user_profile=user_profile, property=property)
         if created:
+            property.likes += 1
+            property.save()
             return JsonResponse({'message': 'Added to wishlist successfully'})
         else:
             return JsonResponse({'message': 'Property already in wishlist'})
@@ -69,6 +80,8 @@ def remove_from_wishlist(request, property_id):
         wishlist_item = Wishlist.objects.filter(user_profile=user_profile, property=property).first()
         if wishlist_item:
             wishlist_item.delete()
+            property.likes -= 1
+            property.save()
             return JsonResponse({'message': 'Removed from wishlist successfully'})
         else:
             return JsonResponse({'message': 'Property not in wishlist'})

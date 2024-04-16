@@ -21,6 +21,25 @@
       color: white;
       background-color: #4384F3;
     }
+    .leaflet-popup-content{
+      width: 250px;
+    }
+
+    @media only screen and (max-width: 768px) {
+      #map {
+          height: 250px;
+          margin: 3vh;
+          margin-top: 10vh;
+      }
+      #closeMusicButton {
+          right: 10px;
+          top: 12vh;
+          padding: 10px;
+          padding-inline: 14px;
+          z-index:999;
+      }
+  }
+
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" integrity="sha512-Zcn6bjR/8RZbLEpLIeOwNtzREBAJnUKESxces60Mpoj+2okopSAcSUIUOseddDm0cxnGQzxIR7vJgsLZbdLE3w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 {% endblock styles %}
@@ -313,7 +332,7 @@
                 <h2 class="title-a">Latest Properties</h2>
               </div>
               <div class="title-link">
-                <a href="property-grid.html">All Property
+                <a href="{% url 'properties'%}">All Properties
                   <span class="bi bi-chevron-right"></span>
                 </a>
               </div>
@@ -712,17 +731,17 @@
       </div>
     </section><!-- End Agents Section -->
 
-    <!-- ======= Latest News Section ======= -->
+    <!-- ======= Trending Section ======= -->
     <section class="section-news section-t8">
       <div class="container">
         <div class="row">
           <div class="col-md-12">
             <div class="title-wrap d-flex justify-content-between">
               <div class="title-box">
-                <h2 class="title-a">Latest News</h2>
+                <h2 class="title-a">Trending Properties</h2>
               </div>
               <div class="title-link">
-                <a href="blog-grid.html">All News
+                <a href="{% url 'properties'%}">All Properties
                   <span class="bi bi-chevron-right"></span>
                 </a>
               </div>
@@ -922,93 +941,103 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script>
-  // Define map options
-  const map = L.map('map')
+// Define map options
+const map = L.map('map');
 
-  // Add tile layer (using OpenStreetMap tiles)
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map);
+// Add tile layer (using OpenStreetMap tiles)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
 
-  // Function to handle successful retrieval of user's location
-  function handleLocationSuccess(position) {
-        const { latitude, longitude } = position.coords;
-        userLocation = [latitude, longitude];
-        map.setView(userLocation, 12);
+// Set default map view
+const defaultLocation = [26.7922, 82.1998];
+map.setView(defaultLocation, 12);
 
-        // Fetch property data from backend
-        fetch('/api/properties/')
-            .then(response => response.json())
-            .then(properties => {
-                // Add markers for each property
-                properties.forEach(property => {
-                    let icon;
-                    if (property.type === "Residential") {
-                      icon = L.icon({
-                          iconUrl: '/static/map-icons/Residential.png',
-                          iconSize: [32, 32],
-                          iconAnchor: [16, 32],
-                          popupAnchor: [0, -32]
-                      });
-                  } else if (property.type === "Agricultural") {
-                      icon = L.icon({
-                          iconUrl: '/static/map-icons/Agricultural.png',
-                          iconSize: [32, 32],
-                          iconAnchor: [16, 32],
-                          popupAnchor: [0, -32]
-                      });
-                  } else if (property.type === "Commercial") {
-                      icon = L.icon({
-                          iconUrl: '/static/map-icons/Commercial.png',
-                          iconSize: [32, 32],
-                          iconAnchor: [16, 32],
-                          popupAnchor: [0, -32]
-                      });
-                  } else if (property.type === "Other") {
-                      icon = L.icon({
-                          iconUrl: '/static/map-icons/Other.png',
-                          iconSize: [32, 32],
-                          iconAnchor: [16, 32],
-                          popupAnchor: [0, -32]
-                      });
-                  }
-    
+// Function to fetch property data from backend and add markers
+function fetchAndAddPropertyMarkers() {
+  fetch('/api/properties/')
+    .then(response => response.json())
+    .then(properties => {
+      // Add markers for each property
+      properties.forEach(property => {
+        let icon;
+        if (property.type === "Residential") {
+          icon = L.icon({
+            iconUrl: '/static/map-icons/Residential.png',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32]
+          });
+        } else if (property.type === "Agricultural") {
+          icon = L.icon({
+            iconUrl: '/static/map-icons/Agricultural.png',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32]
+          });
+        } else if (property.type === "Commercial") {
+          icon = L.icon({
+            iconUrl: '/static/map-icons/Commercial.png',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32]
+          });
+        } else if (property.type === "Other") {
+          icon = L.icon({
+            iconUrl: '/static/map-icons/Other.png',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32]
+          });
+        }
 
-                    const marker = L.marker([property.lat, property.lng], { icon }).addTo(map);
-                    marker.bindPopup(`
-                        <b>${property.name}</b><br>
-                        <p>Type: ${property.type}</p>
-                        <p>Description: ${property.description}</p>
-                        <p>Price: ${property.price}</p>
-                        <p>Seller: ${property.seller_name}</p>
-                        <p>Price Range: ${property.price_range}</p>
-                        <p>Locality: ${property.locality}</p>
-                        <p>Contact: ${property.contact}</p>
-                        <p>Pincode: ${property.pincode}</p>
-                        <p>Likes: ${property.likes}</p>
-                        <p>Views: ${property.views}</p>
-                    `);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching property data:', error);
-            });
-    }
+        const marker = L.marker([property.lat, property.lng], { icon }).addTo(map);
+        marker.bindPopup(`
+          <p style="text-align:center;"><b>${property.name}</b></p>
+          <a href='/property-details/${property.property_id}/'><img src='${property.property_image}' style="width: 70%;aspect-ratio: 1.5; border-radius:8px;"><br></a>
+          <p><b>Type: </b>${property.type}</p>
+          <p><b>Locality: </b>${property.locality}</p>
+          <p><b>Pincode: </b>${property.pincode}</p>
+          <p style='position: absolute; right: 30px; top: 40px; width: 20%; display: flex;'><i class="bi bi-heart-fill me-1" style="color:red;" data-property-id="{{ property.id }}" data-action="remove"></i> ${property.likes}</p>
+          <p style='position: absolute; right: 30px; top: 80px; width: 20%; display: flex;'><i class="bi bi-eye-fill me-1" style="color:blue;" data-property-id="{{ property.id }}" data-action="remove"></i> ${property.views}</p>
+        `);
+      });
+    })
+    .catch(error => {
+      console.error('Error fetching property data:', error);
+    });
+}
 
-    // Function to handle errors in retrieving user's location
-    function handleLocationError(error) {
-        console.error('Error getting user location:', error);
-        // Set default map view if user location cannot be retrieved
-        map.setView([26.7922, 82.1998], 12);
-    }
+// Function to handle successful retrieval of user's location
+function handleLocationSuccess(position) {
+  const { latitude, longitude } = position.coords;
+  const userLocation = [latitude, longitude];
+  map.setView(userLocation, 12);
 
-    // Try to get user's location using Geolocation API
-    if ('geolocation' in navigator) {
-        navigator.geolocation.getCurrentPosition(handleLocationSuccess, handleLocationError);
-    } else {
-        // Set default map view if Geolocation API is not supported
-        map.setView([26.7922, 82.1998], 12);
-    }
+    // Add a marker for the user's location
+    const userIcon = L.icon({
+    iconUrl: '/static/map-icons/User.png', // Replace with the path to your user location icon
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16]
+  });
+  const userMarker = L.marker(userLocation, { icon: userIcon }).addTo(map);
+  userMarker.bindPopup('Your Location');
+  
+  fetchAndAddPropertyMarkers();
+}
+
+// Function to handle errors in retrieving user's location
+function handleLocationError(error) {
+  console.error('Error getting user location:', error);
+  fetchAndAddPropertyMarkers();
+}
+
+// Try to get user's location using Geolocation API
+if ('geolocation' in navigator) {
+  navigator.geolocation.getCurrentPosition(handleLocationSuccess, handleLocationError);
+} 
+fetchAndAddPropertyMarkers();
 </script>
 
 <script>

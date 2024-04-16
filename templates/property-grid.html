@@ -13,22 +13,9 @@
     a:hover{
         color: black!important;
     }
-    .heart-icon {
-      color: #ff6b6b;
-      font-size: 24px;
-      cursor: pointer;
-      transition: color 0.3s ease-in-out;
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 999;
-  }
-  .heart-icon.filled {
-      color: #ff0000;
-  }
-  .card-box-a {
-      position: relative;
-  }
+    .card-box-a {
+     position: relative;
+    }
 </style>
 {% endblock styles %}
 
@@ -64,7 +51,6 @@
 
     <!-- ======= Property Grid ======= -->
     <section class="property-grid grid">
-      <p class='ms-5'>{{ request.user.userprofile.wishlist.all }}</p>
       <div class="container">
         <div class="row">
           {% for property in properties %}
@@ -76,13 +62,15 @@
                 {% else %}
                 <img src="/static/assets/img/property-default.jpg" alt="{{ property.name }}" class="img-a img-fluid">
                 {% endif %}
+                {% if request.user.is_authenticated and request.user.userprofile %}
                 <div class="heart-icon-container">
-                  {% if property in request.user.userprofile.wishlist.all %}
+                  {% if property in wishlist_items.all %}
                   <i class="bi bi-heart-fill heart-icon filled" data-property-id="{{ property.id }}" data-action="remove"></i>
                   {% else %}
                   <i class="bi bi-heart heart-icon" data-property-id="{{ property.id }}" data-action="add"></i>
                   {% endif %}
                 </div>
+                {% endif %}
               </div>
               <div class="card-overlay">
                 <div class="card-overlay-a-content">
@@ -93,7 +81,7 @@
                   </div>
                   <div class="card-body-a">
                     <div class="price-box d-flex">
-                      <span class="price-a">{{ property.type }} | STARTING ₹ {{ property.price }}</span>
+                      <span class="price-a">{{ property.type }}</span>
                     </div>
                     <a href="{% url 'property_details' property.property_id %}" class="link-a">Click here to view
                       <span class="bi bi-chevron-right"></span>
@@ -182,35 +170,5 @@
 
   </main>
   {% endblock body %}
-  {% block javascript %}
-<script>
-  $(document).ready(function() {
-    $('.heart-icon').click(function() {
-      var propertyId = $(this).data('property-id');
-      var action = $(this).data('action');
-      var heartIcon = $(this);
-
-      $.ajax({
-        url: action == 'add' ? "{% url 'add_to_wishlist' 0 %}".replace('0', propertyId) : "{% url 'remove_from_wishlist' 0 %}".replace('0', propertyId),
-        method: 'POST',
-        data: {
-          'csrfmiddlewaretoken': '{{ csrf_token }}'
-        },
-        success: function(response) {
-          console.log(response.message);
-          if (action == 'add') {
-            heartIcon.removeClass('bi-heart').addClass('bi-heart-fill filled');
-            heartIcon.data('action', 'remove');
-          } else {
-            heartIcon.removeClass('bi-heart-fill filled').addClass('bi-heart');
-            heartIcon.data('action', 'add');
-          }
-        },
-        error: function(xhr, errmsg, err) {
-          console.log(xhr.status + ": " + xhr.responseText);
-        }
-      });
-    });
-  });
-</script>
+{% block javascript %}
 {% endblock javascript %}

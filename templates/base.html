@@ -220,21 +220,55 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js" integrity="sha512-ykZ1QQr0Jy/4ZkvKuqWn4iF3lqPZyij9iRv6sGqLRdTPkY69YX6+7wvVGmsdBbiIfN/8OdsI7HABjvEok6ZopQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
       <script src="/static/assets/js/main.js"></script>
       <script>
-        $(document).ready(function() {
-            $('#audio-switch').change(function() {
-                var isChecked = $(this).prop('checked');
-                $.ajax({
-                    type: 'POST',
-                    url: '{% url "toggle_audio" %}',
-                    data: {'csrfmiddlewaretoken': '{{ csrf_token }}'},
-                    success: function(response) {
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(xhr.responseText);
-                    }
-                });
+        function switchAudio(checkbox) {
+            var isChecked = $(checkbox).prop('checked');
+            $.ajax({
+                type: 'POST',
+                url: '{% url "toggle_audio" %}',
+                data: {'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                success: function(response) {
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
             });
+        }
+
+        $(document).ready(function() {
+          $('#audio-switch').change(function() {
+              switchAudio(this);
+          });
         });
+    </script>
+    <script>
+      $(document).ready(function() {
+        $('.heart-icon').click(function() {
+          var propertyId = $(this).data('property-id');
+          var action = $(this).data('action');
+          var heartIcon = $(this);
+    
+          $.ajax({
+            url: action == 'add' ? "{% url 'add_to_wishlist' 0 %}".replace('0', propertyId) : "{% url 'remove_from_wishlist' 0 %}".replace('0', propertyId),
+            method: 'POST',
+            data: {
+              'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+              console.log(response.message);
+              if (action == 'add') {
+                heartIcon.removeClass('bi-heart').addClass('bi-heart-fill filled');
+                heartIcon.data('action', 'remove');
+              } else {
+                heartIcon.removeClass('bi-heart-fill filled').addClass('bi-heart');
+                heartIcon.data('action', 'add');
+              }
+            },
+            error: function(xhr, errmsg, err) {
+              console.log(xhr.status + ": " + xhr.responseText);
+            }
+          });
+        });
+      });
     </script>
       {% block javascript %}{% endblock javascript %}
 </body>

@@ -10,8 +10,17 @@ def agent_signup(request):
     if request.method == 'POST':
         form = AgentSignUpForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            agent_profile = AgentProfile.objects.create(user=user, name=form.cleaned_data['name'], phone_number=form.cleaned_data['phone_number'], email=form.cleaned_data['email'], address=form.cleaned_data['address'], govt_id=form.cleaned_data['govt_id'], locality=form.cleaned_data['locality'])
+            full_name = form.cleaned_data['name']
+            email=form.cleaned_data['email']
+            first_name, *last_name_parts = full_name.split(' ')
+            last_name = ' '.join(last_name_parts)
+
+            user = form.save(commit=False)
+            user.first_name = first_name
+            user.last_name = last_name
+            user.email = email
+            user.save()
+            agent_profile = AgentProfile.objects.create(user=user, name=full_name, phone_number=form.cleaned_data['phone_number'], email=email, address=form.cleaned_data['address'], govt_id=form.cleaned_data['govt_id'], locality=form.cleaned_data['locality'])
             auth_login(request, user)
             return redirect('agent_dashboard')
     else:
@@ -39,14 +48,19 @@ def login(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 auth_login(request, user)
+                messages.success(request, 'You have successfully logged in.')
+                next_url = request.GET.get('next')
+                if next_url:
+                    return redirect(next_url)
                 if user.is_authenticated:
-                    print('Fuck it works')
-                    return redirect('agent_dashboard')
-                else:
-                    print('Fuck it works too')
-                    return redirect('user_dashboard')
+                        return redirect('user_dashboard')
+            else:
+                messages.error(request, 'Invalid username or password.')
+        else:
+            messages.error(request, 'Invalid form data.')
     else:
         form = AuthenticationForm()
+
     return render(request, 'authentication/login.html', {'form': form})
 
 def logout(request):

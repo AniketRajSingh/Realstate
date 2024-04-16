@@ -31,6 +31,7 @@ class Property(models.Model):
     area = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)
     views = models.IntegerField(default=0)
+    enlisted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='enlisted_properties')
 
     class Meta:
         verbose_name_plural = "Properties"
@@ -44,6 +45,11 @@ class Property(models.Model):
             random_number = random.randint(100, 999)  # Generate a random 3-digit number
             random_string = get_random_string(length=3).upper()  # Generate a random string of length 3
             self.property_id = f'INFK{random_number}{random_string}'  # Concatenate the parts to form the property_id
+
+        if not self.enlisted_by:
+            admin_user = User.objects.filter(is_superuser=True).first()
+            self.enlisted_by = admin_user
+
         super(Property, self).save(*args, **kwargs)
 
 
